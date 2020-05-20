@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>imitation learning | Blake Wulfe</title>
+    <link>https://wulfebw.github.io/category/imitation-learning/</link>
+      <atom:link href="https://wulfebw.github.io/category/imitation-learning/index.xml" rel="self" type="application/rss+xml" />
+    <description>imitation learning</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sat, 13 Jul 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://wulfebw.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>imitation learning</title>
+      <link>https://wulfebw.github.io/category/imitation-learning/</link>
+    </image>
+    
+    <item>
+      <title>Super Smash Bros. 64 AI: Behavioral Cloning</title>
+      <link>https://wulfebw.github.io/post/ssb64-bc/</link>
+      <pubDate>Sat, 13 Jul 2019 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/ssb64-bc/</guid>
+      <description>&lt;h1 id=&#34;summary&#34;&gt;Summary&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Goal&lt;/strong&gt;: develop a Super Smash Bros. 64 AI that acts based on image input&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Approach&lt;/strong&gt;: start with behavioral cloning since it&amp;rsquo;s simple&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Dataset&lt;/strong&gt;: Images and action sequences, and training and validation splits available 
+&lt;a href=&#34;https://s3.console.aws.amazon.com/s3/buckets/ssb64-data-public/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; (
+&lt;a href=&#34;https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;s3 bucket&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Model and Training&lt;/strong&gt;: Convolutional and recurrent neural networks, implemented in pytorch, code available 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Deployment&lt;/strong&gt;: Through 
+&lt;a href=&#34;https://github.com/mupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gym-mupen64plus&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Evaluation&lt;/strong&gt;: Quantitative gameplay performance (damage, kills, lives lost)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Demo&lt;/strong&gt;: See the description of the video for some interesting events&lt;/li&gt;
+&lt;/ol&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/Usr00SPbRHg&#34; frameborder=&#34;0&#34; allow=&#34;accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;!-- markdown-toc start - Don&#39;t edit this section. Run M-x markdown-toc-refresh-toc --&gt;
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#summary&#34;&gt;Summary&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#motivation&#34;&gt;Motivation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#related-work&#34;&gt;Related work&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#dataset&#34;&gt;Dataset&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#approach&#34;&gt;Approach&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#experiments-and-results&#34;&gt;Experiments and Results&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#conclusion-and-future-work&#34;&gt;Conclusion and Future Work&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-1-dataset-collection&#34;&gt;Appendix 1: Dataset collection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-2-imitation-learning&#34;&gt;Appendix 2: Imitation Learning&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-3-model-and-training-details&#34;&gt;Appendix 3: Model and training details&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4: N64 as an RL environment&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-5-rnns-why-use-them-how-to-optimize-and-regularize-them&#34;&gt;Appendix 5: RNNs why use them, how to optimize and regularize them&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- markdown-toc end --&gt;
+&lt;h1 id=&#34;motivation&#34;&gt;Motivation&lt;/h1&gt;
+&lt;p&gt;Build a Super Smash Bros. 64 (SSB64) AI agent to play against.&lt;/p&gt;
+&lt;h1 id=&#34;related-work&#34;&gt;Related work&lt;/h1&gt;
+&lt;h2 id=&#34;n64-and-ssb64-ai&#34;&gt;N64 and SSB64 AI&lt;/h2&gt;
+&lt;p&gt;The only info on an SSB64 AI I could find online was this cs231n 
+&lt;a href=&#34;http://cs231n.stanford.edu/reports/2016/pdfs/113_Report.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;project&lt;/a&gt; with associated 
+&lt;a href=&#34;https://www.youtube.com/watch?v=c-6XcmM-MSk&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;videos&lt;/a&gt;. It&amp;rsquo;s a nice write up and was helpful in doing this project.&lt;/p&gt;
+&lt;p&gt;I thought implementing a similar project myself would be worth doing nevertheless because:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;They don&amp;rsquo;t provide access to any data or code&lt;/li&gt;
+&lt;li&gt;Their agent seems to behave a bit repetitively&lt;/li&gt;
+&lt;li&gt;I was curious whether a different action-space or model would work better&lt;/li&gt;
+&lt;li&gt;As stated, I wanted to play a better AI myself&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://github.com/kevinhughes27/TensorKart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;TensorKart&lt;/a&gt; is a project that developed a Mario Kart 64 AI. That project (and associated blog 
+&lt;a href=&#34;https://www.kevinhughes.ca/blog/tensor-kart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;post&lt;/a&gt;) was also helpful, and provided the technical approach roughly followed in this project.&lt;/p&gt;
+&lt;h2 id=&#34;game-ai-in-general&#34;&gt;Game AI in general&lt;/h2&gt;
+&lt;p&gt;There&amp;rsquo;s a ton of work on game playing. Most of it focuses on reinforcement learning (RL). This is because RL / approximate dynamic programming is currently the best approach to the problem. See for example 
+&lt;a href=&#34;https://openai.com/five/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenAI five&lt;/a&gt; or Deepmind 
+&lt;a href=&#34;https://deepmind.com/blog/alphastar-mastering-real-time-strategy-game-starcraft-ii/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;starcraft II AI &lt;/a&gt; or 
+&lt;a href=&#34;https://deepmind.com/research/alphago/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AlphaGo&lt;/a&gt;. RL is the best approach in these game playing scenarios because (among other reasons):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;It&amp;rsquo;s possible to collect a large amount of training data through simulation.&lt;/li&gt;
+&lt;li&gt;The training and testing distributions closely or exactly match.&lt;/li&gt;
+&lt;li&gt;The agent can benefit from 
+&lt;a href=&#34;https://openai.com/blog/competitive-self-play/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;competitive self play&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;There&amp;rsquo;s an easily accessible reward function (e.g., win/lose, damage, deaths) that aligns well with the true goal (developing a competitive agent).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;dataset&#34;&gt;Dataset&lt;/h1&gt;
+&lt;p&gt;The dataset consists of a set of matches. See 
+&lt;a href=&#34;#appendix-1-dataset-collection&#34;&gt;Appendix 1&lt;/a&gt; for details. Main points:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://mupen64plus.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mupen64plus&lt;/a&gt; was used for emulating the N64.&lt;/li&gt;
+&lt;li&gt;The dataset consists of a set of gameplay matches.
+&lt;ul&gt;
+&lt;li&gt;In total about 175,000 frames representing about 6 hours of gameplay.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Matches were played between blue DK and the highest level game AI Kirby.
+&lt;ul&gt;
+&lt;li&gt;This allows the network to identify which agent it controls.&lt;/li&gt;
+&lt;li&gt;Extending this to multiple characters would require e.g., adding a feature indicating the controlled character.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;All matches were played on the dreamland stage.&lt;/li&gt;
+&lt;li&gt;Items were included to make it more interesting.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Here&amp;rsquo;s a short clip selected from the dataset to give a sense for the behavior being imitated:&lt;/p&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/K4bJlsvCliw&#34; frameborder=&#34;0&#34; allow=&#34;accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h1 id=&#34;approach&#34;&gt;Approach&lt;/h1&gt;
+&lt;p&gt;I started with behavioral cloning (BC), which is supervised learning using a dataset of expert demonstrations, despite it being a worse-performing approach than RL because:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;It&amp;rsquo;s simpler to implement than RL methods.
+&lt;ul&gt;
+&lt;li&gt;Allows for becoming familiar with the emulator in a simplified setting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;It provides a nice baseline for comparison.&lt;/li&gt;
+&lt;li&gt;It has more predictable computational costs than RL.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The main disadvantages of behavioral cloning are:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;It may take a lot of data to achieve good performance (see 
+&lt;a href=&#34;#appendix-2-imitation-learning&#34;&gt;Appendix 2&lt;/a&gt;).&lt;/li&gt;
+&lt;li&gt;The resulting agent will not perform significantly better than the expert providing the data.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;It might perform slightly better due to decreased reaction time, but that&amp;rsquo;s not particularly interesting or fun to play against.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;observation-space&#34;&gt;Observation space&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;A requirement for this project was that the AI has to act on image observations.
+&lt;ul&gt;
+&lt;li&gt;There are some alternatives to this observation space (e.g., operating on the game 
+&lt;a href=&#34;https://deepsense.ai/playing-atari-on-ram-with-deep-q-learning/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RAM&lt;/a&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;A single image is not a Markovian representation of the state.
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s unclear to what extent multiple images would improve performance.&lt;/li&gt;
+&lt;li&gt;For this reason, different numbers of frames were considered as input (fixed history in the CNN case, and complete history in theory in the RNN case).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;action-space&#34;&gt;Action space&lt;/h2&gt;
+&lt;p&gt;I considered two action spaces:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Exclusive multiclass action space consisting of common SSB64 moves.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This is what the cs231n project uses.&lt;/li&gt;
+&lt;li&gt;The actions include  the buttons, the axes, and smash combinations (A + left, A + right, etc).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;A multi-discrete action space with a value for each joystick axis, and one value for the button.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This action space seemed like it should allow for more efficient learning.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;models&#34;&gt;Models&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;A Resnet-9, multi-frame model.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;Using a four-frame history of grayscale images.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;An RNN with Resnet feature extractor.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This takes as input individual grayscale images at each timestep.&lt;/li&gt;
+&lt;li&gt;Same visual feature extractor as the fixed-length history model.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The models were implemented in pytorch. See 
+&lt;a href=&#34;#appendix-3-model-and-training-details&#34;&gt;Appendix 3&lt;/a&gt; for training details.&lt;/p&gt;
+&lt;h1 id=&#34;experiments-and-results&#34;&gt;Experiments and Results&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Edit (05/18/2020): I never ran this evaluation because gym-mupen64plus had a number of issues with it
+&lt;ul&gt;
+&lt;li&gt;See the appendix 4 for more details&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;deployment&#34;&gt;Deployment&lt;/h3&gt;
+&lt;p&gt;The models were deployed using 
+&lt;a href=&#34;https://github.com/bzier/gym-mupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gym-mupen64plus&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;conclusion-and-future-work&#34;&gt;Conclusion and Future Work&lt;/h1&gt;
+&lt;p&gt;Despite not being the best approach to the problem, behavioral cloning was a helpful place to start in creating a SSB64 AI. I learned a fair amount about emulating the game (see 
+&lt;a href=&#34;#appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4&lt;/a&gt;), 
+&lt;a href=&#34;https://github.com/pytorch/ignite&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pytorch ignite&lt;/a&gt; (see 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc/blob/master/scripts/train.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;training script&lt;/a&gt;), regularizing RNNs (see 
+&lt;a href=&#34;#appendix-5-rnns-why-use-them-how-to-optimize-and-regularize-them&#34;&gt;Appendix 5&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+The main direction for future work is applying RL to the problem. As discussed in 
+&lt;a href=&#34;#appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4&lt;/a&gt;, the N64 isn&amp;rsquo;t the most convenient environment for RL for technical reasons, so most of the effort in applying RL would be in creating a convenient environment.&lt;/p&gt;
+&lt;h1 id=&#34;appendix-1-dataset-collection&#34;&gt;Appendix 1: Dataset collection&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Images were collected by adapting the TensorKart codebase
+&lt;ul&gt;
+&lt;li&gt;See this script&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I collected the data on a mac. The 
+&lt;a href=&#34;https://github.com/zeth/inputs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Inputs&lt;/a&gt; python package used in TensorKart doesn&amp;rsquo;t work on mac for joysticks, so I made some changes to the input plugin for mupen64plus to accept a command line argument for a filepath at which to store the actions received. See 
+&lt;a href=&#34;https://github.com/wulfebw/mupen64plus-input-sdl&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; for the fork containing those changes.&lt;/li&gt;
+&lt;li&gt;Image-action pairs were created by finding, for each image, the non-null action that occurred most recently following the collected image, up to a maximum of 0.05 seconds after the image, or if no non-null action occurred, a noop action was selected.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-2-imitation-learning&#34;&gt;Appendix 2: Imitation Learning&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Some &lt;a href=&#34;https://wulfebw.github.io/assets/imitation_learning_notes.pdf&#34;&gt;notes&lt;/a&gt; on the topic.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-3-model-and-training-details&#34;&gt;Appendix 3: Model and training details&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;See &lt;a href=&#34;https://github.com/wulfebw/ssb64bc/blob/master/scripts/hparams.py&#34;&gt;here&lt;/a&gt; for the hyperparams used in the CNN case.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4: N64 as an RL environment&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;mupen64plus seems to be the most popular N64 emulator.&lt;/li&gt;
+&lt;li&gt;It is not designed for use in RL.
+&lt;ul&gt;
+&lt;li&gt;The design is based on a core module that has plugins for video, audio, controller input, etc.&lt;/li&gt;
+&lt;li&gt;The plugins don&amp;rsquo;t communicate directly.&lt;/li&gt;
+&lt;li&gt;Providing a unified interface for RL would require a significant amount of effort, with the implementation options being:
+&lt;ol&gt;
+&lt;li&gt;Wrap the core and all plugins in an adapter program.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;And also interpret / provide access to the RAM.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Use 
+&lt;a href=&#34;http://tasvideos.org/BizHawk.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BizHawk&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;Bizhawk seems to have already 
+&lt;a href=&#34;https://github.com/TASVideos/BizHawk/tree/master/libmupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;done&lt;/a&gt; option 1, and is typically used in tool-assisted SSB64 gameplay.&lt;/li&gt;
+&lt;li&gt;It only seems to work on windows for now, with linux support being 
+&lt;a href=&#34;https://github.com/TASVideos/BizHawk/issues/1430&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;developed&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Alternatively, you could use 
+&lt;a href=&#34;https://github.com/bzier/gym-mupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gym-mupen64plus&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;It takes screenshots of the game and parses them to compute rewards.&lt;/li&gt;
+&lt;li&gt;The main problems are:
+&lt;ol&gt;
+&lt;li&gt;Because the observations are from screenshots, the hardware might influence the rate of observations and their alignment with actions taken.
+&lt;ul&gt;
+&lt;li&gt;This is complicated to deal with, as can be seen in the dataset 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc/tree/master/ssb64bc/formatting&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;formatting details&lt;/a&gt; of this project.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;gym-mupen64plus for SSB64 attempts to automatically select characters in versus mode, but that didn&amp;rsquo;t work in my case.
+&lt;ul&gt;
+&lt;li&gt;The implementation assumes the selector for the AI appears in the same location every time.
+&lt;ul&gt;
+&lt;li&gt;In my emulation of the game it was random.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Directly performing these tasks by operating on the RAM is clearly a better approach.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Parsing the screen for the reward seems to work, but breaks with small changes.
+&lt;ul&gt;
+&lt;li&gt;Using the RAM directly would be faster and more reliable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-5-rnns-why-use-them-how-to-optimize-and-regularize-them&#34;&gt;Appendix 5: RNNs why use them, how to optimize and regularize them&lt;/h1&gt;
+&lt;h2 id=&#34;why-use-an-rnn&#34;&gt;Why use an RNN?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;I tried using an RNN because I was curious to what extent it would improve performance.
+&lt;ul&gt;
+&lt;li&gt;The reasons it might improve performance are:
+&lt;ol&gt;
+&lt;li&gt;A reasonable-size, fixed-frame history may not represent a Markovian representation of the environment.&lt;/li&gt;
+&lt;li&gt;The inductive bias of the RNN may provide some benefits (e.g., consistency or smoothness).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;optimizing-and-regularizing-rnns&#34;&gt;Optimizing and regularizing RNNs&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;First, note that RNNs have gone out of fashion lately (at least in NLP).
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/pdf/1706.03762.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Transformer networks&lt;/a&gt; are generally being preferred.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://openreview.net/pdf?id=Hygxb2CqKm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; a paper that tries to explain why.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;There are a lot of tricks for regularizing and optimizing RNNs.
+&lt;ul&gt;
+&lt;li&gt;This is a good 
+&lt;a href=&#34;https://arxiv.org/pdf/1708.02182.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paper&lt;/a&gt; on it that is somewhat recent.
+&lt;ul&gt;
+&lt;li&gt;It focuses on NLP, but the advice seemed to help in my case.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I implemented or copied some of the regularization methods 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc/blob/master/ssb64bc/models/torch_utils.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;One decision to make in RNN training is whether to use &amp;ldquo;stateful&amp;rdquo; or &amp;ldquo;stateless&amp;rdquo; training.
+&lt;ul&gt;
+&lt;li&gt;See this 
+&lt;a href=&#34;https://keras.io/examples/lstm_stateful/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;description&lt;/a&gt; and this 
+&lt;a href=&#34;http://philipperemy.github.io/keras-stateful-lstm/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;explanation&lt;/a&gt;.
+&lt;ul&gt;
+&lt;li&gt;The gist is that you need to use stateful (maintaining the hidden state across batches) training if you want the network to learn to maintain memory beyond the length of the BPTT.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Multi-Agent Imitation Learning for Driving Simulation</title>
+      <link>https://wulfebw.github.io/publication/multiagent-gail-driver/</link>
+      <pubDate>Fri, 02 Mar 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/publication/multiagent-gail-driver/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

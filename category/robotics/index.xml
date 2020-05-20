@@ -1,0 +1,436 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>robotics | Blake Wulfe</title>
+    <link>https://wulfebw.github.io/category/robotics/</link>
+      <atom:link href="https://wulfebw.github.io/category/robotics/index.xml" rel="self" type="application/rss+xml" />
+    <description>robotics</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 13 Feb 2018 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://wulfebw.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>robotics</title>
+      <link>https://wulfebw.github.io/category/robotics/</link>
+    </image>
+    
+    <item>
+      <title>Two Link Programmatic Control</title>
+      <link>https://wulfebw.github.io/post/03-two-link-programmatic-control/</link>
+      <pubDate>Tue, 13 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/03-two-link-programmatic-control/</guid>
+      <description>&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;If we want to control the robot through imitation learning, we need the ability to manually control it so as to gather data&lt;/li&gt;
+&lt;li&gt;Manual control requires programmatic control, i.e., the ability to specify end-effector positions and have the robot achieve those positions through changes in joint configurations&lt;/li&gt;
+&lt;li&gt;This post shows how to implement programmatic control of a simple two-link robot&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Programmatic robot control
+&lt;ul&gt;
+&lt;li&gt;Forward kinematics&lt;/li&gt;
+&lt;li&gt;Inverse kinematics&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;preview&#34;&gt;Preview&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/vHgpbdHIV50&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h2 id=&#34;materials&#34;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;This post only uses materials from previous posts&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;h3 id=&#34;forward-kinematics&#34;&gt;Forward Kinematics&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;We&amp;rsquo;re focused on robotic manipulators aka robot arms, where the end of the robot arm is called the end-effector&lt;/li&gt;
+&lt;li&gt;Given all the information about a robot arm (length and mass of the links, the types of joints, how those joints and links are connected, etc) and the current configuration of the joints, how can you find out where the end-effector is?
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Forward_kinematics&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Forward kinematics&lt;/a&gt; answers this question&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;schematic&#34;&gt;Schematic&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;First, draw a schematic of the robot arm, assigning frames to the different joints&lt;/li&gt;
+&lt;li&gt;Figure 3 in these 
+&lt;a href=&#34;http://www.cs.columbia.edu/~allen/F15/NOTES/jacobians.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;notes&lt;/a&gt; provides a schematic for a two-revolute-joint robot (called an revolute-revolute (RR) manipulator)
+&lt;ul&gt;
+&lt;li&gt;revolute means the joint rotates, and the other option is prismatic meaning it translates linearly along its axis&lt;/li&gt;
+&lt;li&gt;Also, here&amp;rsquo;s a schematic with the frames labeled&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;schematic.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;dh-parameters&#34;&gt;DH Parameters&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Second, derive 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Denavit–Hartenberg parameters&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;DH parameters are one convention for expressing information about robotic manipulators&lt;/li&gt;
+&lt;li&gt;They make it easy to derive the transformation from each frame to the end-effector frame&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;transformation-matrix&#34;&gt;Transformation Matrix&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Given the DH parameters, we can derive a transformation matrix from each frame to the frame of the end-effector
+&lt;ul&gt;
+&lt;li&gt;First, build transformation matrices from each frame to the next&lt;/li&gt;
+&lt;li&gt;Second, multiply these all together to find the transformation from the 0th frame to the end-effector frame&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Section 3 of the referenced 
+&lt;a href=&#34;http://www.cs.columbia.edu/~allen/F15/NOTES/jacobians.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;notes&lt;/a&gt; provides the transformation matrix for the RR manipulator&lt;/li&gt;
+&lt;li&gt;Here&amp;rsquo;s the 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/rlrobo/dh.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt; for computing the transformation matrix given the DH parameters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;inverse-kinematics&#34;&gt;Inverse Kinematics&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;We just looked at the forward kinematics, which tell you the position of the end-effector given the configuration of the joints&lt;/li&gt;
+&lt;li&gt;What about the opposite question: given a (desired) position of the end-effector how do you figure out the joints that achieve that position?&lt;/li&gt;
+&lt;li&gt;This turns out to be a more difficult problem to solve
+&lt;ul&gt;
+&lt;li&gt;Since the forward kinematics involve nonlinear operations (sine, cosine), typically there&amp;rsquo;s no analytical solution for the joints&lt;/li&gt;
+&lt;li&gt;There can be many solutions, and there can also be no solutions&lt;/li&gt;
+&lt;li&gt;We&amp;rsquo;ll look at one method for solving the problem&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;jacobian&#34;&gt;Jacobian&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The method we&amp;rsquo;ll use requires the Jacobian&lt;/li&gt;
+&lt;li&gt;The forward kinematics map from the joints config to the end-effector position
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s a function mapping from dimension n to dimension m&lt;/li&gt;
+&lt;li&gt;If you differentiate each output with respect to each input, and arrange those derivatives in a matrix, that matrix is the 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jacobian&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Given the transformation matrices, there&amp;rsquo;s a simple algorithm for finding the Jacobian&lt;/li&gt;
+&lt;li&gt;The code implementing the algorithm and along with a description can be found 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/rlrobo/jacobian.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;inverse-jacobian-method&#34;&gt;Inverse Jacobian Method&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The method we use for solving the inverse kinematics problem is called the inverse Jacobian method
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s an iterative method that
+&lt;ul&gt;
+&lt;li&gt;Linearizes the function using the Jacobian&lt;/li&gt;
+&lt;li&gt;Solves for the change in joint configuration that moves the end-effector closest to the target position
+&lt;ul&gt;
+&lt;li&gt;This is accomplished by formulating the pseudoinverse of the Jacobian, hence the name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Updates the configuration&lt;/li&gt;
+&lt;li&gt;Repeats until the target is reached or it&amp;rsquo;s determined that it cannot be reached&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://inst.eecs.berkeley.edu/~cs184/fa09/resources/ik.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; a solid tutorial on it that steps through the logic and math&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/rlrobo/inverse_kinematics.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; my implementation of it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;This method does not explicitly deal with constraints on the movement of the manipulator
+&lt;ul&gt;
+&lt;li&gt;A faster solver that handles constraints will be the topic of a future post&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;walkthrough&#34;&gt;Walkthrough&lt;/h2&gt;
+&lt;h3 id=&#34;hardware&#34;&gt;Hardware&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The two-link manipulator is just the connected servos from the previous post, which looks like:
+&lt;img src=&#34;manipulator.jpg&#34; alt=&#34;&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;software&#34;&gt;Software&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Download and setup the project code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone https://github.com/wulfebw/robotics_rl.git
+cd robotics_rl
+sudo python setup.py develop
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;Run the tutorial 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/tutorials/3_two_link_programmatic_control.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt; that randomly samples an end-effector position, and then solves for a joint configuration to achieves that position&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import time
+import rlrobo.manipulator
+
+manipulator = rlrobo.manipulator.build_RR_manipulator(l1=1,l2=2)
+while True:
+    pos = manipulator.random_position()
+    manipulator.set_end_effector_position(pos)
+    time.sleep(1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/vHgpbdHIV50&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Single Servo Control</title>
+      <link>https://wulfebw.github.io/post/02-single-servo-control/</link>
+      <pubDate>Fri, 09 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/02-single-servo-control/</guid>
+      <description>&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Servos will control the joints of the robotic arm. In this post, we&amp;rsquo;ll look at controlling a single servo using a HAT (hardware attached on top).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;preview&#34;&gt;Preview&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/kY3lgvHtju8&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h2 id=&#34;materials&#34;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;servo HAT
+&lt;ul&gt;
+&lt;li&gt;$22 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B00XW2OY5A/ref=oh_aui_detailpage_o01_s01?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;HAT power source
+&lt;ul&gt;
+&lt;li&gt;$8 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B00P5P6ZBS/ref=oh_aui_detailpage_o01_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;soldering kit
+&lt;ul&gt;
+&lt;li&gt;$20 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B06XZ31W3M/ref=oh_aui_detailpage_o00_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;small test servos
+&lt;ul&gt;
+&lt;li&gt;$7 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B013UI9MVG/ref=oh_aui_detailpage_o09_s01?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;total cost: $57 + cost of previous materials
+&lt;ul&gt;
+&lt;li&gt;cost so far: $147 + cost of common materials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;h3 id=&#34;how-do-servos-work&#34;&gt;How do servos work?&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;They have a motor. You send a signal to the motor, and the length of the signal indicates the desired position of the motor
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://learn.sparkfun.com/tutorials/hobby-servo-tutorial&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Servo primer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Pulse-width_modulation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pulse width modulation (PWM)&lt;/a&gt; is used in sending the signal
+&lt;ul&gt;
+&lt;li&gt;PWM resources:
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://learn.adafruit.com/adafruits-raspberry-pi-lesson-8-using-a-servo-motor/servo-motors&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Adafruit description&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;why-do-we-need-the-servo-hat&#34;&gt;Why do we need the servo HAT?&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The pi has the ability to send PWM signals, but there are two problems
+&lt;ol&gt;
+&lt;li&gt;servos draw enough power that operating them can interfere with the pi operations&lt;/li&gt;
+&lt;li&gt;the pi only has a single PWM pin, which means it can only control one servo&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;The servo HAT allows for controlling many servos at once, and also uses an external power supply to avoid interfering with the pi&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;walkthrough&#34;&gt;Walkthrough&lt;/h2&gt;
+&lt;h3 id=&#34;servo-hat-hardware-setup&#34;&gt;Servo HAT hardware setup&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Solder the pins into the servo HAT then attach the HAT to the pi as in the following picture
+&lt;img src=&#34;assembled.jpg&#34; alt=&#34;A connected HAT&#34;&gt;&lt;/li&gt;
+&lt;li&gt;Attach the servo to the first set of 3 pins&lt;/li&gt;
+&lt;li&gt;Power on the pi and servo HAT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;servo-hat-software-setup&#34;&gt;Servo HAT software setup&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the software library that comes with the servo HAT as described in this 
+&lt;a href=&#34;https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Add the downloaded library to PYTHONPATH in your raspberry pi bash_profile
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;export PYTHONPATH=&amp;quot;/home/pi/software/Adafruit-Raspberry-Pi-Python-Code/Adafruit_PWM_Servo_Driver:$PYTHONPATH&amp;quot;&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;where &lt;code&gt;software&lt;/code&gt; is the directory where I downloaded the software&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Since these programs are run with the super user, and running with super user erases the PYTHONPATH by default, we need to explicitly keep the PYTHONPATH when running as super user
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sudo visudo -f /etc/sudoers.d/custom&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;this creates a custom file rather than directly editing sudoers&lt;/li&gt;
+&lt;li&gt;by default this uses nano to edit the file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;add &lt;code&gt;Defaults env_keep += &amp;quot;PYTHONPATH&amp;quot;&lt;/code&gt; to the file and exit&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;running-the-tutorial-demo&#34;&gt;Running the tutorial demo&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the additional 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/tutorials/2_single_servo.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt; used to control the servo
+&lt;ul&gt;
+&lt;li&gt;this is in the same github repo as the code from the previous tutorial&lt;/li&gt;
+&lt;li&gt;it contains a utility function that allows for controlling the servo based on the desired angle of the servo arm rather than with pulse widths&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the tutorial demo
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sudo python 2_single_servo.py&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/kY3lgvHtju8&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>LED Control</title>
+      <link>https://wulfebw.github.io/post/01-led-control/</link>
+      <pubDate>Sun, 04 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/01-led-control/</guid>
+      <description>&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;We&amp;rsquo;ll make a LED blink in this post. Gotta start somewhere.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;preview&#34;&gt;Preview&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/9AAlkAnyxGc?ecver=1&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h2 id=&#34;materials&#34;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Raspberry Pi
+&lt;ul&gt;
+&lt;li&gt;For example through CanaKit&lt;/li&gt;
+&lt;li&gt;$70 on 
+&lt;a href=&#34;https://www.amazon.com/CanaKit-Raspberry-Complete-Starter-Kit/dp/B01C6Q2GSY/ref=sr_1_1?s=electronics&amp;amp;ie=UTF8&amp;amp;qid=1517689480&amp;amp;sr=1-1&amp;amp;keywords=CanaKit&amp;#43;Raspberry&amp;#43;Pi&amp;#43;3&amp;#43;Complete&amp;#43;Starter&amp;#43;Kit&amp;#43;-&amp;#43;32&amp;#43;GB&amp;#43;Edition&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;electric cables
+&lt;ul&gt;
+&lt;li&gt;$7 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B01LZF1ZSZ/ref=oh_aui_detailpage_o08_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;There are probably cheaper options&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;electronics start kit
+&lt;ul&gt;
+&lt;li&gt;$13 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B01ERP6WL4/ref=oh_aui_detailpage_o08_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;There are definitely cheaper options&lt;/li&gt;
+&lt;li&gt;For this tutorial, we&amp;rsquo;re just using an LED, a 1k resistor, and a breadboard&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;commonly available materials
+&lt;ul&gt;
+&lt;li&gt;keyboard&lt;/li&gt;
+&lt;li&gt;mouse&lt;/li&gt;
+&lt;li&gt;monitor&lt;/li&gt;
+&lt;li&gt;hdmi-to-hdmi cable to connect raspberry pi to monitor&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;total cost: $90 + cost of common materials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;walkthrough&#34;&gt;Walkthrough&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;set up the raspberry pi
+&lt;ul&gt;
+&lt;li&gt;see canakit 
+&lt;a href=&#34;https://www.canakit.com/quick-start/pi&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;instructions&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;set up raspberry pi wifi connection and ssh
+&lt;ul&gt;
+&lt;li&gt;connect pi to monitor, mouse, keyboard&lt;/li&gt;
+&lt;li&gt;follow these 
+&lt;a href=&#34;https://www.raspberrypi.org/documentation/remote-access/ssh/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;instructions&lt;/a&gt; to set up ssh
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;hostname -I&lt;/code&gt; to get ip address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ssh pi@&amp;lt;ip address&amp;gt;&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;from your other computer&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;default password is &lt;code&gt;raspberry&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;set up raspberry pi with LED
+&lt;ul&gt;
+&lt;li&gt;see Raspberry Pi Cookbook instructions 
+&lt;a href=&#34;http://razzpisampler.oreilly.com/ch03.html#SEC7.1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;download my version of the 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/tutorials/1_led.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;run &lt;code&gt;sudo python 1_led.py&lt;/code&gt; from cmd line&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/9AAlkAnyxGc?ecver=1&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Robotics Intro</title>
+      <link>https://wulfebw.github.io/post/00-robotics-intro/</link>
+      <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/00-robotics-intro/</guid>
+      <description>&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;This project consists of building a robotic arm with visual perception, and learning to control it through reinforcement and imitation learning&lt;/li&gt;
+&lt;li&gt;Here&amp;rsquo;s the breakdown of the task:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://wulfebw.github.io/post/01-led-control&#34;&gt;LED control&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://wulfebw.github.io/post/02-single-servo-control&#34;&gt;Single-servo control&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://wulfebw.github.io/post/03-two-link-programmatic-control&#34;&gt;Two-link programmatic control&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Two-link manual control&lt;/li&gt;
+&lt;li&gt;Two-link imitation control&lt;/li&gt;
+&lt;li&gt;Perception&lt;/li&gt;
+&lt;li&gt;Two-link RL control&lt;/li&gt;
+&lt;li&gt;Building the robotic arm&lt;/li&gt;
+&lt;li&gt;Robotic arm programmatic control&lt;/li&gt;
+&lt;li&gt;Robotic arm manual control&lt;/li&gt;
+&lt;li&gt;Robotic arm imitation control&lt;/li&gt;
+&lt;li&gt;Robotic arm RL control&lt;/li&gt;
+&lt;li&gt;Robotic arm sim2real RL control&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;what-is-this&#34;&gt;What is this?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;this is an outline for a project&lt;/li&gt;
+&lt;li&gt;the project is to build a robotic arm and control it via reinforcement and imitation learning&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;why-am-i-doing-this-project&#34;&gt;Why am I doing this project?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;RL and stochastic dynamic programming have been successful in performing a number of tasks like game playing and robotics&lt;/li&gt;
+&lt;li&gt;Most RL (human) learning resources focus on implementing algorithms and applying them in simulation&lt;/li&gt;
+&lt;li&gt;Real-world robotics is a key application area of reinforcement learning because it is a case where RL is very likely the best option for learning control policies&lt;/li&gt;
+&lt;li&gt;The goal of this project is to demonstrate the application of RL in a robotics task
+&lt;ul&gt;
+&lt;li&gt;In a manner that people could do by themselves at reasonable cost without external resources like a robotics lab&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

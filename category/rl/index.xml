@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>rl | Blake Wulfe</title>
+    <link>https://wulfebw.github.io/category/rl/</link>
+      <atom:link href="https://wulfebw.github.io/category/rl/index.xml" rel="self" type="application/rss+xml" />
+    <description>rl</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 09 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://wulfebw.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>rl</title>
+      <link>https://wulfebw.github.io/category/rl/</link>
+    </image>
+    
+    <item>
+      <title>MuZero</title>
+      <link>https://wulfebw.github.io/post/muzero/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/muzero/</guid>
+      <description>&lt;h1 id=&#34;context&#34;&gt;Context&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/pdf/1911.08265.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MuZero paper.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://github.com/wulfebw/muzero&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tabular implementation.&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;See that link for code description and some experiments.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;question&#34;&gt;Question&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Why should MuZero be better than other deep RL algorithms (in particular DQN)?&lt;/li&gt;
+&lt;li&gt;The paper, 
+&lt;a href=&#34;https://arxiv.org/pdf/1906.05243.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&amp;ldquo;When to use parametric models in reinforcement learning?&amp;quot;&lt;/a&gt;, goes into this question but with an emphasis on a 
+&lt;a href=&#34;https://arxiv.org/pdf/1903.00374.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;different&lt;/a&gt; model-based algorithm
+&lt;ul&gt;
+&lt;li&gt;They define planning in an unusual manner as using &amp;ldquo;more computation without additional data to improve predictions and behavior&amp;rdquo;
+&lt;ul&gt;
+&lt;li&gt;The &amp;ldquo;usual&amp;rdquo; definition being the use of a (learned) transition and reward model to compute a value function or policy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The reasons they give for why parameteric model-based planning might outperform non-parameteric (experience replay) planning are not that clear to me, but may include:
+&lt;ol&gt;
+&lt;li&gt;Inductive bias of the parameteric model (improving generalization)&lt;/li&gt;
+&lt;li&gt;Improved exploration through use of the model&lt;/li&gt;
+&lt;li&gt;Improved credit assignment (&amp;ldquo;backward planning&amp;rdquo;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;To answer the question, I think the reason MuZero might outperfom DQN is the second reason: that it exhibits better exploration
+&lt;ul&gt;
+&lt;li&gt;This isn&amp;rsquo;t the typical kind of improved exploration through model use that you get with e.g., 
+&lt;a href=&#34;https://ie.technion.ac.il/~moshet/brafman02a.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;R-max&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Instead, because the learned value function is approximate, if the learned model is &amp;ldquo;good enough&amp;rdquo;, then you can use additional computation to select better actions in the environment than you would if you behaved greedily with respect to the value function itself.
+&lt;ul&gt;
+&lt;li&gt;Where &amp;ldquo;additional computation&amp;rdquo; means running MCTS.&lt;/li&gt;
+&lt;li&gt;This means that the actions you take will, on average, be better.&lt;/li&gt;
+&lt;li&gt;Which intuitively should mean that you&amp;rsquo;ll learn about the optimal policy and its value function more quickly.
+&lt;ul&gt;
+&lt;li&gt;And reach different parts of the state space that have higher value.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Which can be viewed as improved exploration.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;This works for the definition of &amp;ldquo;better&amp;rdquo; as &amp;ldquo;more sample efficient&amp;rdquo;
+&lt;ul&gt;
+&lt;li&gt;But that additional computation takes more resources and time, so if you defined &amp;ldquo;better&amp;rdquo; as the algorithm that provides the best solution given some amount of time, DQN might outperform MuZero.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Multi-Agent Imitation Learning for Driving Simulation</title>
+      <link>https://wulfebw.github.io/publication/multiagent-gail-driver/</link>
+      <pubDate>Fri, 02 Mar 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/publication/multiagent-gail-driver/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Deep Reinforcement Learning for Collision Avoidance</title>
+      <link>https://wulfebw.github.io/project/uav-drl/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/project/uav-drl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>DQN Tips</title>
+      <link>https://wulfebw.github.io/post/dqn/</link>
+      <pubDate>Sat, 15 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/dqn/</guid>
+      <description>&lt;ul&gt;
+&lt;li&gt;update: see 
+&lt;a href=&#34;https://arxiv.org/abs/1710.02298&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;rainbow&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;sanity check the implementation
+&lt;ul&gt;
+&lt;li&gt;come up with a simple dataset and see if the DQN can correctly learn values for it&lt;/li&gt;
+&lt;li&gt;an example is a contextual bandit problem where you have two possible states, and two actions, where one action is +1 and the other -1&lt;/li&gt;
+&lt;li&gt;generally, an rl method should work on 1-step and 2-step mdps both with and without random rewards and transitions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;updating the target network
+&lt;ul&gt;
+&lt;li&gt;check freeze rate&lt;/li&gt;
+&lt;li&gt;this should be between every 100 updates and every 40000&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;batch size
+&lt;ul&gt;
+&lt;li&gt;this can be hard to set and depends on CPU vs GPU as well as the state dimensionality&lt;/li&gt;
+&lt;li&gt;start with 32 and increase&lt;/li&gt;
+&lt;li&gt;the goal should be to have each experience replayed some number of times on average
+&lt;ul&gt;
+&lt;li&gt;this is determined by the size of the replay memory and batch size&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;replay memory
+&lt;ul&gt;
+&lt;li&gt;replay memory size 1,000 to 10,000,000&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;action selection
+&lt;ul&gt;
+&lt;li&gt;softmax vs e-greedy
+&lt;ul&gt;
+&lt;li&gt;softmax typically works better if the temperature is tuned well&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;learning rate
+&lt;ul&gt;
+&lt;li&gt;try values between 0.01 and 0.00001 generally&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;state sampling
+&lt;ul&gt;
+&lt;li&gt;only relevant when initial-state distribution can be controlled&lt;/li&gt;
+&lt;li&gt;if the important rewards are common then uniform sampling of the initial state might work&lt;/li&gt;
+&lt;li&gt;if the important reward is rare then you&amp;rsquo;ll need to oversample these states
+&lt;ul&gt;
+&lt;li&gt;to do this in a principled manner, you need to know the relative probability of sampling states in the original MDP versus the proposal MDP (i.e., you need to do importance sampling)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;prioritized sampling can also help if you are dealing with rare, significant rewards&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;normalizing input
+&lt;ul&gt;
+&lt;li&gt;mean center and normalize&lt;/li&gt;
+&lt;li&gt;to get the stats, if it&amp;rsquo;s stationary, run it for 100,000 samples and compute mean and std dev&lt;/li&gt;
+&lt;li&gt;or if the range of the input is available then you can use that
+&lt;ul&gt;
+&lt;li&gt;subtract the average of the end points&lt;/li&gt;
+&lt;li&gt;divide by half the total range&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;max episode length
+&lt;ul&gt;
+&lt;li&gt;when ending an episode &lt;em&gt;not&lt;/em&gt; at a terminal state, be careful not to label that as a terminal state&lt;/li&gt;
+&lt;li&gt;this value will impact the distribution over the state space&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;terminal states
+&lt;ul&gt;
+&lt;li&gt;you need to handle this so that the target value is zero if it&amp;rsquo;s terminal&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;discount
+&lt;ul&gt;
+&lt;li&gt;&amp;lt; 1 unless finite horizon in which case &amp;lt;= 1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;initializing the network weights
+&lt;ul&gt;
+&lt;li&gt;this is consistently surprisingly important&lt;/li&gt;
+&lt;li&gt;see &lt;a href=&#34;http://cs231n.github.io/neural-networks-2/&#34;&gt;http://cs231n.github.io/neural-networks-2/&lt;/a&gt; (Weight Initialization)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;action space
+&lt;ul&gt;
+&lt;li&gt;if this is large then it can make learning slow&lt;/li&gt;
+&lt;li&gt;if this really should be continuous, then consider policy gradient methods&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;regularization / dropout
+&lt;ul&gt;
+&lt;li&gt;many papers don&amp;rsquo;t report using regularization or dropout&lt;/li&gt;
+&lt;li&gt;empirically it can help in certain situations
+&lt;ul&gt;
+&lt;li&gt;for example when the training MDP is different from the testing MDP and you need the policy to generalize&lt;/li&gt;
+&lt;li&gt;start with small values for l2 reg (0.00001)&lt;/li&gt;
+&lt;li&gt;dropout can vary dramatically in effectiveness (dropout ratio of 0.01 to 0.5)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;network hyperparams
+&lt;ul&gt;
+&lt;li&gt;number of layers
+&lt;ul&gt;
+&lt;li&gt;start small (2) and increase as needed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;number of units
+&lt;ul&gt;
+&lt;li&gt;start small (32) and increase as needed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;nonlinearity
+&lt;ul&gt;
+&lt;li&gt;start with relu or tanh&lt;/li&gt;
+&lt;li&gt;maxout, elu, etc for getting extra benefit&lt;/li&gt;
+&lt;li&gt;common pitfall: applying a nonlinearity to the last output of the network
+&lt;ul&gt;
+&lt;li&gt;this should just be a affine layer (dot(x,W) + b)&lt;/li&gt;
+&lt;li&gt;in the relu case, applying it to the last layer makes all the output positive, which will break it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;optimizer
+&lt;ul&gt;
+&lt;li&gt;start with adam or rmsprop&lt;/li&gt;
+&lt;li&gt;then check out (&lt;a href=&#34;http://cs231n.github.io/neural-networks-3/&#34;&gt;http://cs231n.github.io/neural-networks-3/&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;rewards
+&lt;ul&gt;
+&lt;li&gt;you can clip them between -1 and +1, but you lose a lot of information&lt;/li&gt;
+&lt;li&gt;if you have to use certain reward values larger than that, it can help to normalize them to be between -1 and +1&lt;/li&gt;
+&lt;li&gt;if you have control over the rewards, then consider using reward shaping&lt;/li&gt;
+&lt;li&gt;if the rewards are too large, then you can end up with e.g., relus dying&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;dqn variations
+&lt;ul&gt;
+&lt;li&gt;double dqn works a lot better, particularly if the rewards are negative
+&lt;ul&gt;
+&lt;li&gt;this is particularly easy to implement, so it&amp;rsquo;s generally worth a shot&lt;/li&gt;
+&lt;li&gt;(&lt;a href=&#34;https://arxiv.org/abs/1509.06461&#34;&gt;https://arxiv.org/abs/1509.06461&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;dueling network can be better
+&lt;ul&gt;
+&lt;li&gt;(&lt;a href=&#34;https://arxiv.org/abs/1509.06461&#34;&gt;https://arxiv.org/abs/1509.06461&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;replay memory variations
+&lt;ul&gt;
+&lt;li&gt;prioritized replay
+&lt;ul&gt;
+&lt;li&gt;oversamples certain experiences based on td-error and uses importance sampling in the loss to maintain unbiased state distribution&lt;/li&gt;
+&lt;li&gt;helps a lot with sparse rewards&lt;/li&gt;
+&lt;li&gt;(&lt;a href=&#34;https://arxiv.org/abs/1511.05952&#34;&gt;https://arxiv.org/abs/1511.05952&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

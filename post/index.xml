@@ -1,0 +1,1001 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Posts | Blake Wulfe</title>
+    <link>https://wulfebw.github.io/post/</link>
+      <atom:link href="https://wulfebw.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <description>Posts</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Mon, 09 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://wulfebw.github.io/images/icon_hu0b7a4cb9992c9ac0e91bd28ffd38dd00_9727_512x512_fill_lanczos_center_2.png</url>
+      <title>Posts</title>
+      <link>https://wulfebw.github.io/post/</link>
+    </image>
+    
+    <item>
+      <title>MuZero</title>
+      <link>https://wulfebw.github.io/post/muzero/</link>
+      <pubDate>Mon, 09 Dec 2019 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/muzero/</guid>
+      <description>&lt;h1 id=&#34;context&#34;&gt;Context&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/pdf/1911.08265.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MuZero paper.&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://github.com/wulfebw/muzero&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Tabular implementation.&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;See that link for code description and some experiments.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;question&#34;&gt;Question&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Why should MuZero be better than other deep RL algorithms (in particular DQN)?&lt;/li&gt;
+&lt;li&gt;The paper, 
+&lt;a href=&#34;https://arxiv.org/pdf/1906.05243.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&amp;ldquo;When to use parametric models in reinforcement learning?&amp;quot;&lt;/a&gt;, goes into this question but with an emphasis on a 
+&lt;a href=&#34;https://arxiv.org/pdf/1903.00374.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;different&lt;/a&gt; model-based algorithm
+&lt;ul&gt;
+&lt;li&gt;They define planning in an unusual manner as using &amp;ldquo;more computation without additional data to improve predictions and behavior&amp;rdquo;
+&lt;ul&gt;
+&lt;li&gt;The &amp;ldquo;usual&amp;rdquo; definition being the use of a (learned) transition and reward model to compute a value function or policy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The reasons they give for why parameteric model-based planning might outperform non-parameteric (experience replay) planning are not that clear to me, but may include:
+&lt;ol&gt;
+&lt;li&gt;Inductive bias of the parameteric model (improving generalization)&lt;/li&gt;
+&lt;li&gt;Improved exploration through use of the model&lt;/li&gt;
+&lt;li&gt;Improved credit assignment (&amp;ldquo;backward planning&amp;rdquo;)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;To answer the question, I think the reason MuZero might outperfom DQN is the second reason: that it exhibits better exploration
+&lt;ul&gt;
+&lt;li&gt;This isn&amp;rsquo;t the typical kind of improved exploration through model use that you get with e.g., 
+&lt;a href=&#34;https://ie.technion.ac.il/~moshet/brafman02a.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;R-max&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Instead, because the learned value function is approximate, if the learned model is &amp;ldquo;good enough&amp;rdquo;, then you can use additional computation to select better actions in the environment than you would if you behaved greedily with respect to the value function itself.
+&lt;ul&gt;
+&lt;li&gt;Where &amp;ldquo;additional computation&amp;rdquo; means running MCTS.&lt;/li&gt;
+&lt;li&gt;This means that the actions you take will, on average, be better.&lt;/li&gt;
+&lt;li&gt;Which intuitively should mean that you&amp;rsquo;ll learn about the optimal policy and its value function more quickly.
+&lt;ul&gt;
+&lt;li&gt;And reach different parts of the state space that have higher value.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Which can be viewed as improved exploration.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;This works for the definition of &amp;ldquo;better&amp;rdquo; as &amp;ldquo;more sample efficient&amp;rdquo;
+&lt;ul&gt;
+&lt;li&gt;But that additional computation takes more resources and time, so if you defined &amp;ldquo;better&amp;rdquo; as the algorithm that provides the best solution given some amount of time, DQN might outperform MuZero.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Super Smash Bros. 64 AI: Behavioral Cloning</title>
+      <link>https://wulfebw.github.io/post/ssb64-bc/</link>
+      <pubDate>Sat, 13 Jul 2019 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/ssb64-bc/</guid>
+      <description>&lt;h1 id=&#34;summary&#34;&gt;Summary&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Goal&lt;/strong&gt;: develop a Super Smash Bros. 64 AI that acts based on image input&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Approach&lt;/strong&gt;: start with behavioral cloning since it&amp;rsquo;s simple&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Dataset&lt;/strong&gt;: Images and action sequences, and training and validation splits available 
+&lt;a href=&#34;https://s3.console.aws.amazon.com/s3/buckets/ssb64-data-public/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; (
+&lt;a href=&#34;https://docs.aws.amazon.com/AmazonS3/latest/dev/RequesterPaysBuckets.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;s3 bucket&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Model and Training&lt;/strong&gt;: Convolutional and recurrent neural networks, implemented in pytorch, code available 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Deployment&lt;/strong&gt;: Through 
+&lt;a href=&#34;https://github.com/mupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gym-mupen64plus&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Evaluation&lt;/strong&gt;: Quantitative gameplay performance (damage, kills, lives lost)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Demo&lt;/strong&gt;: See the description of the video for some interesting events&lt;/li&gt;
+&lt;/ol&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/Usr00SPbRHg&#34; frameborder=&#34;0&#34; allow=&#34;accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;!-- markdown-toc start - Don&#39;t edit this section. Run M-x markdown-toc-refresh-toc --&gt;
+&lt;p&gt;&lt;strong&gt;Table of Contents&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;#summary&#34;&gt;Summary&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#motivation&#34;&gt;Motivation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#related-work&#34;&gt;Related work&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#dataset&#34;&gt;Dataset&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#approach&#34;&gt;Approach&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#experiments-and-results&#34;&gt;Experiments and Results&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#conclusion-and-future-work&#34;&gt;Conclusion and Future Work&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-1-dataset-collection&#34;&gt;Appendix 1: Dataset collection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-2-imitation-learning&#34;&gt;Appendix 2: Imitation Learning&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-3-model-and-training-details&#34;&gt;Appendix 3: Model and training details&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4: N64 as an RL environment&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;#appendix-5-rnns-why-use-them-how-to-optimize-and-regularize-them&#34;&gt;Appendix 5: RNNs why use them, how to optimize and regularize them&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;!-- markdown-toc end --&gt;
+&lt;h1 id=&#34;motivation&#34;&gt;Motivation&lt;/h1&gt;
+&lt;p&gt;Build a Super Smash Bros. 64 (SSB64) AI agent to play against.&lt;/p&gt;
+&lt;h1 id=&#34;related-work&#34;&gt;Related work&lt;/h1&gt;
+&lt;h2 id=&#34;n64-and-ssb64-ai&#34;&gt;N64 and SSB64 AI&lt;/h2&gt;
+&lt;p&gt;The only info on an SSB64 AI I could find online was this cs231n 
+&lt;a href=&#34;http://cs231n.stanford.edu/reports/2016/pdfs/113_Report.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;project&lt;/a&gt; with associated 
+&lt;a href=&#34;https://www.youtube.com/watch?v=c-6XcmM-MSk&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;videos&lt;/a&gt;. It&amp;rsquo;s a nice write up and was helpful in doing this project.&lt;/p&gt;
+&lt;p&gt;I thought implementing a similar project myself would be worth doing nevertheless because:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;They don&amp;rsquo;t provide access to any data or code&lt;/li&gt;
+&lt;li&gt;Their agent seems to behave a bit repetitively&lt;/li&gt;
+&lt;li&gt;I was curious whether a different action-space or model would work better&lt;/li&gt;
+&lt;li&gt;As stated, I wanted to play a better AI myself&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;
+&lt;a href=&#34;https://github.com/kevinhughes27/TensorKart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;TensorKart&lt;/a&gt; is a project that developed a Mario Kart 64 AI. That project (and associated blog 
+&lt;a href=&#34;https://www.kevinhughes.ca/blog/tensor-kart&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;post&lt;/a&gt;) was also helpful, and provided the technical approach roughly followed in this project.&lt;/p&gt;
+&lt;h2 id=&#34;game-ai-in-general&#34;&gt;Game AI in general&lt;/h2&gt;
+&lt;p&gt;There&amp;rsquo;s a ton of work on game playing. Most of it focuses on reinforcement learning (RL). This is because RL / approximate dynamic programming is currently the best approach to the problem. See for example 
+&lt;a href=&#34;https://openai.com/five/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenAI five&lt;/a&gt; or Deepmind 
+&lt;a href=&#34;https://deepmind.com/blog/alphastar-mastering-real-time-strategy-game-starcraft-ii/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;starcraft II AI &lt;/a&gt; or 
+&lt;a href=&#34;https://deepmind.com/research/alphago/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;AlphaGo&lt;/a&gt;. RL is the best approach in these game playing scenarios because (among other reasons):&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;It&amp;rsquo;s possible to collect a large amount of training data through simulation.&lt;/li&gt;
+&lt;li&gt;The training and testing distributions closely or exactly match.&lt;/li&gt;
+&lt;li&gt;The agent can benefit from 
+&lt;a href=&#34;https://openai.com/blog/competitive-self-play/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;competitive self play&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;There&amp;rsquo;s an easily accessible reward function (e.g., win/lose, damage, deaths) that aligns well with the true goal (developing a competitive agent).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h1 id=&#34;dataset&#34;&gt;Dataset&lt;/h1&gt;
+&lt;p&gt;The dataset consists of a set of matches. See 
+&lt;a href=&#34;#appendix-1-dataset-collection&#34;&gt;Appendix 1&lt;/a&gt; for details. Main points:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://mupen64plus.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;mupen64plus&lt;/a&gt; was used for emulating the N64.&lt;/li&gt;
+&lt;li&gt;The dataset consists of a set of gameplay matches.
+&lt;ul&gt;
+&lt;li&gt;In total about 175,000 frames representing about 6 hours of gameplay.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Matches were played between blue DK and the highest level game AI Kirby.
+&lt;ul&gt;
+&lt;li&gt;This allows the network to identify which agent it controls.&lt;/li&gt;
+&lt;li&gt;Extending this to multiple characters would require e.g., adding a feature indicating the controlled character.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;All matches were played on the dreamland stage.&lt;/li&gt;
+&lt;li&gt;Items were included to make it more interesting.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Here&amp;rsquo;s a short clip selected from the dataset to give a sense for the behavior being imitated:&lt;/p&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/K4bJlsvCliw&#34; frameborder=&#34;0&#34; allow=&#34;accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h1 id=&#34;approach&#34;&gt;Approach&lt;/h1&gt;
+&lt;p&gt;I started with behavioral cloning (BC), which is supervised learning using a dataset of expert demonstrations, despite it being a worse-performing approach than RL because:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;It&amp;rsquo;s simpler to implement than RL methods.
+&lt;ul&gt;
+&lt;li&gt;Allows for becoming familiar with the emulator in a simplified setting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;It provides a nice baseline for comparison.&lt;/li&gt;
+&lt;li&gt;It has more predictable computational costs than RL.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The main disadvantages of behavioral cloning are:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;It may take a lot of data to achieve good performance (see 
+&lt;a href=&#34;#appendix-2-imitation-learning&#34;&gt;Appendix 2&lt;/a&gt;).&lt;/li&gt;
+&lt;li&gt;The resulting agent will not perform significantly better than the expert providing the data.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;It might perform slightly better due to decreased reaction time, but that&amp;rsquo;s not particularly interesting or fun to play against.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;observation-space&#34;&gt;Observation space&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;A requirement for this project was that the AI has to act on image observations.
+&lt;ul&gt;
+&lt;li&gt;There are some alternatives to this observation space (e.g., operating on the game 
+&lt;a href=&#34;https://deepsense.ai/playing-atari-on-ram-with-deep-q-learning/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RAM&lt;/a&gt;).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;A single image is not a Markovian representation of the state.
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s unclear to what extent multiple images would improve performance.&lt;/li&gt;
+&lt;li&gt;For this reason, different numbers of frames were considered as input (fixed history in the CNN case, and complete history in theory in the RNN case).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;action-space&#34;&gt;Action space&lt;/h2&gt;
+&lt;p&gt;I considered two action spaces:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Exclusive multiclass action space consisting of common SSB64 moves.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This is what the cs231n project uses.&lt;/li&gt;
+&lt;li&gt;The actions include  the buttons, the axes, and smash combinations (A + left, A + right, etc).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;A multi-discrete action space with a value for each joystick axis, and one value for the button.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This action space seemed like it should allow for more efficient learning.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;models&#34;&gt;Models&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;A Resnet-9, multi-frame model.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;Using a four-frame history of grayscale images.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;An RNN with Resnet feature extractor.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This takes as input individual grayscale images at each timestep.&lt;/li&gt;
+&lt;li&gt;Same visual feature extractor as the fixed-length history model.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The models were implemented in pytorch. See 
+&lt;a href=&#34;#appendix-3-model-and-training-details&#34;&gt;Appendix 3&lt;/a&gt; for training details.&lt;/p&gt;
+&lt;h1 id=&#34;experiments-and-results&#34;&gt;Experiments and Results&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Edit (05/18/2020): I never ran this evaluation because gym-mupen64plus had a number of issues with it
+&lt;ul&gt;
+&lt;li&gt;See the appendix 4 for more details&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;deployment&#34;&gt;Deployment&lt;/h3&gt;
+&lt;p&gt;The models were deployed using 
+&lt;a href=&#34;https://github.com/bzier/gym-mupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gym-mupen64plus&lt;/a&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;conclusion-and-future-work&#34;&gt;Conclusion and Future Work&lt;/h1&gt;
+&lt;p&gt;Despite not being the best approach to the problem, behavioral cloning was a helpful place to start in creating a SSB64 AI. I learned a fair amount about emulating the game (see 
+&lt;a href=&#34;#appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4&lt;/a&gt;), 
+&lt;a href=&#34;https://github.com/pytorch/ignite&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pytorch ignite&lt;/a&gt; (see 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc/blob/master/scripts/train.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;training script&lt;/a&gt;), regularizing RNNs (see 
+&lt;a href=&#34;#appendix-5-rnns-why-use-them-how-to-optimize-and-regularize-them&#34;&gt;Appendix 5&lt;/a&gt;).&lt;/p&gt;
+&lt;p&gt;&lt;br /&gt;
+The main direction for future work is applying RL to the problem. As discussed in 
+&lt;a href=&#34;#appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4&lt;/a&gt;, the N64 isn&amp;rsquo;t the most convenient environment for RL for technical reasons, so most of the effort in applying RL would be in creating a convenient environment.&lt;/p&gt;
+&lt;h1 id=&#34;appendix-1-dataset-collection&#34;&gt;Appendix 1: Dataset collection&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Images were collected by adapting the TensorKart codebase
+&lt;ul&gt;
+&lt;li&gt;See this script&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I collected the data on a mac. The 
+&lt;a href=&#34;https://github.com/zeth/inputs&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Inputs&lt;/a&gt; python package used in TensorKart doesn&amp;rsquo;t work on mac for joysticks, so I made some changes to the input plugin for mupen64plus to accept a command line argument for a filepath at which to store the actions received. See 
+&lt;a href=&#34;https://github.com/wulfebw/mupen64plus-input-sdl&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt; for the fork containing those changes.&lt;/li&gt;
+&lt;li&gt;Image-action pairs were created by finding, for each image, the non-null action that occurred most recently following the collected image, up to a maximum of 0.05 seconds after the image, or if no non-null action occurred, a noop action was selected.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-2-imitation-learning&#34;&gt;Appendix 2: Imitation Learning&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Some &lt;a href=&#34;https://wulfebw.github.io/assets/imitation_learning_notes.pdf&#34;&gt;notes&lt;/a&gt; on the topic.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-3-model-and-training-details&#34;&gt;Appendix 3: Model and training details&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;See &lt;a href=&#34;https://github.com/wulfebw/ssb64bc/blob/master/scripts/hparams.py&#34;&gt;here&lt;/a&gt; for the hyperparams used in the CNN case.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-4-n64-as-an-rl-environment&#34;&gt;Appendix 4: N64 as an RL environment&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;mupen64plus seems to be the most popular N64 emulator.&lt;/li&gt;
+&lt;li&gt;It is not designed for use in RL.
+&lt;ul&gt;
+&lt;li&gt;The design is based on a core module that has plugins for video, audio, controller input, etc.&lt;/li&gt;
+&lt;li&gt;The plugins don&amp;rsquo;t communicate directly.&lt;/li&gt;
+&lt;li&gt;Providing a unified interface for RL would require a significant amount of effort, with the implementation options being:
+&lt;ol&gt;
+&lt;li&gt;Wrap the core and all plugins in an adapter program.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;And also interpret / provide access to the RAM.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Use 
+&lt;a href=&#34;http://tasvideos.org/BizHawk.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;BizHawk&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;Bizhawk seems to have already 
+&lt;a href=&#34;https://github.com/TASVideos/BizHawk/tree/master/libmupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;done&lt;/a&gt; option 1, and is typically used in tool-assisted SSB64 gameplay.&lt;/li&gt;
+&lt;li&gt;It only seems to work on windows for now, with linux support being 
+&lt;a href=&#34;https://github.com/TASVideos/BizHawk/issues/1430&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;developed&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Alternatively, you could use 
+&lt;a href=&#34;https://github.com/bzier/gym-mupen64plus&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;gym-mupen64plus&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;It takes screenshots of the game and parses them to compute rewards.&lt;/li&gt;
+&lt;li&gt;The main problems are:
+&lt;ol&gt;
+&lt;li&gt;Because the observations are from screenshots, the hardware might influence the rate of observations and their alignment with actions taken.
+&lt;ul&gt;
+&lt;li&gt;This is complicated to deal with, as can be seen in the dataset 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc/tree/master/ssb64bc/formatting&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;formatting details&lt;/a&gt; of this project.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;gym-mupen64plus for SSB64 attempts to automatically select characters in versus mode, but that didn&amp;rsquo;t work in my case.
+&lt;ul&gt;
+&lt;li&gt;The implementation assumes the selector for the AI appears in the same location every time.
+&lt;ul&gt;
+&lt;li&gt;In my emulation of the game it was random.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Directly performing these tasks by operating on the RAM is clearly a better approach.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Parsing the screen for the reward seems to work, but breaks with small changes.
+&lt;ul&gt;
+&lt;li&gt;Using the RAM directly would be faster and more reliable.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;appendix-5-rnns-why-use-them-how-to-optimize-and-regularize-them&#34;&gt;Appendix 5: RNNs why use them, how to optimize and regularize them&lt;/h1&gt;
+&lt;h2 id=&#34;why-use-an-rnn&#34;&gt;Why use an RNN?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;I tried using an RNN because I was curious to what extent it would improve performance.
+&lt;ul&gt;
+&lt;li&gt;The reasons it might improve performance are:
+&lt;ol&gt;
+&lt;li&gt;A reasonable-size, fixed-frame history may not represent a Markovian representation of the environment.&lt;/li&gt;
+&lt;li&gt;The inductive bias of the RNN may provide some benefits (e.g., consistency or smoothness).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;optimizing-and-regularizing-rnns&#34;&gt;Optimizing and regularizing RNNs&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;First, note that RNNs have gone out of fashion lately (at least in NLP).
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://arxiv.org/pdf/1706.03762.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Transformer networks&lt;/a&gt; are generally being preferred.&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://openreview.net/pdf?id=Hygxb2CqKm&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; a paper that tries to explain why.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;There are a lot of tricks for regularizing and optimizing RNNs.
+&lt;ul&gt;
+&lt;li&gt;This is a good 
+&lt;a href=&#34;https://arxiv.org/pdf/1708.02182.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paper&lt;/a&gt; on it that is somewhat recent.
+&lt;ul&gt;
+&lt;li&gt;It focuses on NLP, but the advice seemed to help in my case.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I implemented or copied some of the regularization methods 
+&lt;a href=&#34;https://github.com/wulfebw/ssb64bc/blob/master/ssb64bc/models/torch_utils.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;One decision to make in RNN training is whether to use &amp;ldquo;stateful&amp;rdquo; or &amp;ldquo;stateless&amp;rdquo; training.
+&lt;ul&gt;
+&lt;li&gt;See this 
+&lt;a href=&#34;https://keras.io/examples/lstm_stateful/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;description&lt;/a&gt; and this 
+&lt;a href=&#34;http://philipperemy.github.io/keras-stateful-lstm/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;explanation&lt;/a&gt;.
+&lt;ul&gt;
+&lt;li&gt;The gist is that you need to use stateful (maintaining the hidden state across batches) training if you want the network to learn to maintain memory beyond the length of the BPTT.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Two Link Programmatic Control</title>
+      <link>https://wulfebw.github.io/post/03-two-link-programmatic-control/</link>
+      <pubDate>Tue, 13 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/03-two-link-programmatic-control/</guid>
+      <description>&lt;h2 id=&#34;intro&#34;&gt;Intro&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;If we want to control the robot through imitation learning, we need the ability to manually control it so as to gather data&lt;/li&gt;
+&lt;li&gt;Manual control requires programmatic control, i.e., the ability to specify end-effector positions and have the robot achieve those positions through changes in joint configurations&lt;/li&gt;
+&lt;li&gt;This post shows how to implement programmatic control of a simple two-link robot&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Programmatic robot control
+&lt;ul&gt;
+&lt;li&gt;Forward kinematics&lt;/li&gt;
+&lt;li&gt;Inverse kinematics&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;preview&#34;&gt;Preview&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/vHgpbdHIV50&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h2 id=&#34;materials&#34;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;This post only uses materials from previous posts&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;h3 id=&#34;forward-kinematics&#34;&gt;Forward Kinematics&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;We&amp;rsquo;re focused on robotic manipulators aka robot arms, where the end of the robot arm is called the end-effector&lt;/li&gt;
+&lt;li&gt;Given all the information about a robot arm (length and mass of the links, the types of joints, how those joints and links are connected, etc) and the current configuration of the joints, how can you find out where the end-effector is?
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Forward_kinematics&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Forward kinematics&lt;/a&gt; answers this question&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;schematic&#34;&gt;Schematic&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;First, draw a schematic of the robot arm, assigning frames to the different joints&lt;/li&gt;
+&lt;li&gt;Figure 3 in these 
+&lt;a href=&#34;http://www.cs.columbia.edu/~allen/F15/NOTES/jacobians.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;notes&lt;/a&gt; provides a schematic for a two-revolute-joint robot (called an revolute-revolute (RR) manipulator)
+&lt;ul&gt;
+&lt;li&gt;revolute means the joint rotates, and the other option is prismatic meaning it translates linearly along its axis&lt;/li&gt;
+&lt;li&gt;Also, here&amp;rsquo;s a schematic with the frames labeled&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;schematic.jpg&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h4 id=&#34;dh-parameters&#34;&gt;DH Parameters&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Second, derive 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Denavit%E2%80%93Hartenberg_parameters&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Denavit–Hartenberg parameters&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;DH parameters are one convention for expressing information about robotic manipulators&lt;/li&gt;
+&lt;li&gt;They make it easy to derive the transformation from each frame to the end-effector frame&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;transformation-matrix&#34;&gt;Transformation Matrix&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Given the DH parameters, we can derive a transformation matrix from each frame to the frame of the end-effector
+&lt;ul&gt;
+&lt;li&gt;First, build transformation matrices from each frame to the next&lt;/li&gt;
+&lt;li&gt;Second, multiply these all together to find the transformation from the 0th frame to the end-effector frame&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Section 3 of the referenced 
+&lt;a href=&#34;http://www.cs.columbia.edu/~allen/F15/NOTES/jacobians.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;notes&lt;/a&gt; provides the transformation matrix for the RR manipulator&lt;/li&gt;
+&lt;li&gt;Here&amp;rsquo;s the 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/rlrobo/dh.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt; for computing the transformation matrix given the DH parameters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;inverse-kinematics&#34;&gt;Inverse Kinematics&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;We just looked at the forward kinematics, which tell you the position of the end-effector given the configuration of the joints&lt;/li&gt;
+&lt;li&gt;What about the opposite question: given a (desired) position of the end-effector how do you figure out the joints that achieve that position?&lt;/li&gt;
+&lt;li&gt;This turns out to be a more difficult problem to solve
+&lt;ul&gt;
+&lt;li&gt;Since the forward kinematics involve nonlinear operations (sine, cosine), typically there&amp;rsquo;s no analytical solution for the joints&lt;/li&gt;
+&lt;li&gt;There can be many solutions, and there can also be no solutions&lt;/li&gt;
+&lt;li&gt;We&amp;rsquo;ll look at one method for solving the problem&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;jacobian&#34;&gt;Jacobian&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The method we&amp;rsquo;ll use requires the Jacobian&lt;/li&gt;
+&lt;li&gt;The forward kinematics map from the joints config to the end-effector position
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s a function mapping from dimension n to dimension m&lt;/li&gt;
+&lt;li&gt;If you differentiate each output with respect to each input, and arrange those derivatives in a matrix, that matrix is the 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Jacobian&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Given the transformation matrices, there&amp;rsquo;s a simple algorithm for finding the Jacobian&lt;/li&gt;
+&lt;li&gt;The code implementing the algorithm and along with a description can be found 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/rlrobo/jacobian.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;inverse-jacobian-method&#34;&gt;Inverse Jacobian Method&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The method we use for solving the inverse kinematics problem is called the inverse Jacobian method
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s an iterative method that
+&lt;ul&gt;
+&lt;li&gt;Linearizes the function using the Jacobian&lt;/li&gt;
+&lt;li&gt;Solves for the change in joint configuration that moves the end-effector closest to the target position
+&lt;ul&gt;
+&lt;li&gt;This is accomplished by formulating the pseudoinverse of the Jacobian, hence the name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Updates the configuration&lt;/li&gt;
+&lt;li&gt;Repeats until the target is reached or it&amp;rsquo;s determined that it cannot be reached&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://inst.eecs.berkeley.edu/~cs184/fa09/resources/ik.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; a solid tutorial on it that steps through the logic and math&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/rlrobo/inverse_kinematics.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; my implementation of it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;This method does not explicitly deal with constraints on the movement of the manipulator
+&lt;ul&gt;
+&lt;li&gt;A faster solver that handles constraints will be the topic of a future post&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;walkthrough&#34;&gt;Walkthrough&lt;/h2&gt;
+&lt;h3 id=&#34;hardware&#34;&gt;Hardware&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The two-link manipulator is just the connected servos from the previous post, which looks like:
+&lt;img src=&#34;manipulator.jpg&#34; alt=&#34;&#34;&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;software&#34;&gt;Software&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Download and setup the project code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;git clone https://github.com/wulfebw/robotics_rl.git
+cd robotics_rl
+sudo python setup.py develop
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;Run the tutorial 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/tutorials/3_two_link_programmatic_control.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt; that randomly samples an end-effector position, and then solves for a joint configuration to achieves that position&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import time
+import rlrobo.manipulator
+
+manipulator = rlrobo.manipulator.build_RR_manipulator(l1=1,l2=2)
+while True:
+    pos = manipulator.random_position()
+    manipulator.set_end_effector_position(pos)
+    time.sleep(1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/vHgpbdHIV50&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Single Servo Control</title>
+      <link>https://wulfebw.github.io/post/02-single-servo-control/</link>
+      <pubDate>Fri, 09 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/02-single-servo-control/</guid>
+      <description>&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Servos will control the joints of the robotic arm. In this post, we&amp;rsquo;ll look at controlling a single servo using a HAT (hardware attached on top).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;preview&#34;&gt;Preview&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/kY3lgvHtju8&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h2 id=&#34;materials&#34;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;servo HAT
+&lt;ul&gt;
+&lt;li&gt;$22 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B00XW2OY5A/ref=oh_aui_detailpage_o01_s01?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;HAT power source
+&lt;ul&gt;
+&lt;li&gt;$8 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B00P5P6ZBS/ref=oh_aui_detailpage_o01_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;soldering kit
+&lt;ul&gt;
+&lt;li&gt;$20 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B06XZ31W3M/ref=oh_aui_detailpage_o00_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;small test servos
+&lt;ul&gt;
+&lt;li&gt;$7 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B013UI9MVG/ref=oh_aui_detailpage_o09_s01?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;total cost: $57 + cost of previous materials
+&lt;ul&gt;
+&lt;li&gt;cost so far: $147 + cost of common materials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;h3 id=&#34;how-do-servos-work&#34;&gt;How do servos work?&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;They have a motor. You send a signal to the motor, and the length of the signal indicates the desired position of the motor
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://learn.sparkfun.com/tutorials/hobby-servo-tutorial&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Servo primer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Pulse-width_modulation&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Pulse width modulation (PWM)&lt;/a&gt; is used in sending the signal
+&lt;ul&gt;
+&lt;li&gt;PWM resources:
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://learn.adafruit.com/adafruits-raspberry-pi-lesson-8-using-a-servo-motor/servo-motors&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Adafruit description&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;why-do-we-need-the-servo-hat&#34;&gt;Why do we need the servo HAT?&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The pi has the ability to send PWM signals, but there are two problems
+&lt;ol&gt;
+&lt;li&gt;servos draw enough power that operating them can interfere with the pi operations&lt;/li&gt;
+&lt;li&gt;the pi only has a single PWM pin, which means it can only control one servo&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;The servo HAT allows for controlling many servos at once, and also uses an external power supply to avoid interfering with the pi&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;walkthrough&#34;&gt;Walkthrough&lt;/h2&gt;
+&lt;h3 id=&#34;servo-hat-hardware-setup&#34;&gt;Servo HAT hardware setup&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Solder the pins into the servo HAT then attach the HAT to the pi as in the following picture
+&lt;img src=&#34;assembled.jpg&#34; alt=&#34;A connected HAT&#34;&gt;&lt;/li&gt;
+&lt;li&gt;Attach the servo to the first set of 3 pins&lt;/li&gt;
+&lt;li&gt;Power on the pi and servo HAT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;servo-hat-software-setup&#34;&gt;Servo HAT software setup&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the software library that comes with the servo HAT as described in this 
+&lt;a href=&#34;https://learn.adafruit.com/adafruit-16-channel-pwm-servo-hat-for-raspberry-pi/using-the-python-library&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Add the downloaded library to PYTHONPATH in your raspberry pi bash_profile
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;export PYTHONPATH=&amp;quot;/home/pi/software/Adafruit-Raspberry-Pi-Python-Code/Adafruit_PWM_Servo_Driver:$PYTHONPATH&amp;quot;&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;where &lt;code&gt;software&lt;/code&gt; is the directory where I downloaded the software&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Since these programs are run with the super user, and running with super user erases the PYTHONPATH by default, we need to explicitly keep the PYTHONPATH when running as super user
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sudo visudo -f /etc/sudoers.d/custom&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;this creates a custom file rather than directly editing sudoers&lt;/li&gt;
+&lt;li&gt;by default this uses nano to edit the file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;add &lt;code&gt;Defaults env_keep += &amp;quot;PYTHONPATH&amp;quot;&lt;/code&gt; to the file and exit&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;running-the-tutorial-demo&#34;&gt;Running the tutorial demo&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Download the additional 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/tutorials/2_single_servo.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt; used to control the servo
+&lt;ul&gt;
+&lt;li&gt;this is in the same github repo as the code from the previous tutorial&lt;/li&gt;
+&lt;li&gt;it contains a utility function that allows for controlling the servo based on the desired angle of the servo arm rather than with pulse widths&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Run the tutorial demo
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;sudo python 2_single_servo.py&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/kY3lgvHtju8&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>LED Control</title>
+      <link>https://wulfebw.github.io/post/01-led-control/</link>
+      <pubDate>Sun, 04 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/01-led-control/</guid>
+      <description>&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;We&amp;rsquo;ll make a LED blink in this post. Gotta start somewhere.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;preview&#34;&gt;Preview&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/9AAlkAnyxGc?ecver=1&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;h2 id=&#34;materials&#34;&gt;Materials&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Raspberry Pi
+&lt;ul&gt;
+&lt;li&gt;For example through CanaKit&lt;/li&gt;
+&lt;li&gt;$70 on 
+&lt;a href=&#34;https://www.amazon.com/CanaKit-Raspberry-Complete-Starter-Kit/dp/B01C6Q2GSY/ref=sr_1_1?s=electronics&amp;amp;ie=UTF8&amp;amp;qid=1517689480&amp;amp;sr=1-1&amp;amp;keywords=CanaKit&amp;#43;Raspberry&amp;#43;Pi&amp;#43;3&amp;#43;Complete&amp;#43;Starter&amp;#43;Kit&amp;#43;-&amp;#43;32&amp;#43;GB&amp;#43;Edition&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;electric cables
+&lt;ul&gt;
+&lt;li&gt;$7 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B01LZF1ZSZ/ref=oh_aui_detailpage_o08_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;There are probably cheaper options&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;electronics start kit
+&lt;ul&gt;
+&lt;li&gt;$13 on 
+&lt;a href=&#34;https://www.amazon.com/gp/product/B01ERP6WL4/ref=oh_aui_detailpage_o08_s00?ie=UTF8&amp;amp;psc=1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;amazon&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;There are definitely cheaper options&lt;/li&gt;
+&lt;li&gt;For this tutorial, we&amp;rsquo;re just using an LED, a 1k resistor, and a breadboard&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;commonly available materials
+&lt;ul&gt;
+&lt;li&gt;keyboard&lt;/li&gt;
+&lt;li&gt;mouse&lt;/li&gt;
+&lt;li&gt;monitor&lt;/li&gt;
+&lt;li&gt;hdmi-to-hdmi cable to connect raspberry pi to monitor&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;total cost: $90 + cost of common materials&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;walkthrough&#34;&gt;Walkthrough&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;set up the raspberry pi
+&lt;ul&gt;
+&lt;li&gt;see canakit 
+&lt;a href=&#34;https://www.canakit.com/quick-start/pi&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;instructions&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;set up raspberry pi wifi connection and ssh
+&lt;ul&gt;
+&lt;li&gt;connect pi to monitor, mouse, keyboard&lt;/li&gt;
+&lt;li&gt;follow these 
+&lt;a href=&#34;https://www.raspberrypi.org/documentation/remote-access/ssh/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;instructions&lt;/a&gt; to set up ssh
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;hostname -I&lt;/code&gt; to get ip address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ssh pi@&amp;lt;ip address&amp;gt;&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;from your other computer&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;default password is &lt;code&gt;raspberry&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;set up raspberry pi with LED
+&lt;ul&gt;
+&lt;li&gt;see Raspberry Pi Cookbook instructions 
+&lt;a href=&#34;http://razzpisampler.oreilly.com/ch03.html#SEC7.1&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;tutorial&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;download my version of the 
+&lt;a href=&#34;https://github.com/wulfebw/robotics_rl/blob/master/tutorials/1_led.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;run &lt;code&gt;sudo python 1_led.py&lt;/code&gt; from cmd line&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
+&lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/9AAlkAnyxGc?ecver=1&#34; frameborder=&#34;0&#34; allow=&#34;autoplay; encrypted-media&#34; allowfullscreen&gt;&lt;/iframe&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Robotics Intro</title>
+      <link>https://wulfebw.github.io/post/00-robotics-intro/</link>
+      <pubDate>Sat, 03 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/00-robotics-intro/</guid>
+      <description>&lt;h2 id=&#34;outline&#34;&gt;Outline&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;This project consists of building a robotic arm with visual perception, and learning to control it through reinforcement and imitation learning&lt;/li&gt;
+&lt;li&gt;Here&amp;rsquo;s the breakdown of the task:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://wulfebw.github.io/post/01-led-control&#34;&gt;LED control&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://wulfebw.github.io/post/02-single-servo-control&#34;&gt;Single-servo control&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://wulfebw.github.io/post/03-two-link-programmatic-control&#34;&gt;Two-link programmatic control&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Two-link manual control&lt;/li&gt;
+&lt;li&gt;Two-link imitation control&lt;/li&gt;
+&lt;li&gt;Perception&lt;/li&gt;
+&lt;li&gt;Two-link RL control&lt;/li&gt;
+&lt;li&gt;Building the robotic arm&lt;/li&gt;
+&lt;li&gt;Robotic arm programmatic control&lt;/li&gt;
+&lt;li&gt;Robotic arm manual control&lt;/li&gt;
+&lt;li&gt;Robotic arm imitation control&lt;/li&gt;
+&lt;li&gt;Robotic arm RL control&lt;/li&gt;
+&lt;li&gt;Robotic arm sim2real RL control&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;what-is-this&#34;&gt;What is this?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;this is an outline for a project&lt;/li&gt;
+&lt;li&gt;the project is to build a robotic arm and control it via reinforcement and imitation learning&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;why-am-i-doing-this-project&#34;&gt;Why am I doing this project?&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;RL and stochastic dynamic programming have been successful in performing a number of tasks like game playing and robotics&lt;/li&gt;
+&lt;li&gt;Most RL (human) learning resources focus on implementing algorithms and applying them in simulation&lt;/li&gt;
+&lt;li&gt;Real-world robotics is a key application area of reinforcement learning because it is a case where RL is very likely the best option for learning control policies&lt;/li&gt;
+&lt;li&gt;The goal of this project is to demonstrate the application of RL in a robotics task
+&lt;ul&gt;
+&lt;li&gt;In a manner that people could do by themselves at reasonable cost without external resources like a robotics lab&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>DQN Tips</title>
+      <link>https://wulfebw.github.io/post/dqn/</link>
+      <pubDate>Sat, 15 Apr 2017 00:00:00 +0000</pubDate>
+      <guid>https://wulfebw.github.io/post/dqn/</guid>
+      <description>&lt;ul&gt;
+&lt;li&gt;update: see 
+&lt;a href=&#34;https://arxiv.org/abs/1710.02298&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;rainbow&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;sanity check the implementation
+&lt;ul&gt;
+&lt;li&gt;come up with a simple dataset and see if the DQN can correctly learn values for it&lt;/li&gt;
+&lt;li&gt;an example is a contextual bandit problem where you have two possible states, and two actions, where one action is +1 and the other -1&lt;/li&gt;
+&lt;li&gt;generally, an rl method should work on 1-step and 2-step mdps both with and without random rewards and transitions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;updating the target network
+&lt;ul&gt;
+&lt;li&gt;check freeze rate&lt;/li&gt;
+&lt;li&gt;this should be between every 100 updates and every 40000&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;batch size
+&lt;ul&gt;
+&lt;li&gt;this can be hard to set and depends on CPU vs GPU as well as the state dimensionality&lt;/li&gt;
+&lt;li&gt;start with 32 and increase&lt;/li&gt;
+&lt;li&gt;the goal should be to have each experience replayed some number of times on average
+&lt;ul&gt;
+&lt;li&gt;this is determined by the size of the replay memory and batch size&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;replay memory
+&lt;ul&gt;
+&lt;li&gt;replay memory size 1,000 to 10,000,000&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;action selection
+&lt;ul&gt;
+&lt;li&gt;softmax vs e-greedy
+&lt;ul&gt;
+&lt;li&gt;softmax typically works better if the temperature is tuned well&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;learning rate
+&lt;ul&gt;
+&lt;li&gt;try values between 0.01 and 0.00001 generally&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;state sampling
+&lt;ul&gt;
+&lt;li&gt;only relevant when initial-state distribution can be controlled&lt;/li&gt;
+&lt;li&gt;if the important rewards are common then uniform sampling of the initial state might work&lt;/li&gt;
+&lt;li&gt;if the important reward is rare then you&amp;rsquo;ll need to oversample these states
+&lt;ul&gt;
+&lt;li&gt;to do this in a principled manner, you need to know the relative probability of sampling states in the original MDP versus the proposal MDP (i.e., you need to do importance sampling)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;prioritized sampling can also help if you are dealing with rare, significant rewards&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;normalizing input
+&lt;ul&gt;
+&lt;li&gt;mean center and normalize&lt;/li&gt;
+&lt;li&gt;to get the stats, if it&amp;rsquo;s stationary, run it for 100,000 samples and compute mean and std dev&lt;/li&gt;
+&lt;li&gt;or if the range of the input is available then you can use that
+&lt;ul&gt;
+&lt;li&gt;subtract the average of the end points&lt;/li&gt;
+&lt;li&gt;divide by half the total range&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;max episode length
+&lt;ul&gt;
+&lt;li&gt;when ending an episode &lt;em&gt;not&lt;/em&gt; at a terminal state, be careful not to label that as a terminal state&lt;/li&gt;
+&lt;li&gt;this value will impact the distribution over the state space&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;terminal states
+&lt;ul&gt;
+&lt;li&gt;you need to handle this so that the target value is zero if it&amp;rsquo;s terminal&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;discount
+&lt;ul&gt;
+&lt;li&gt;&amp;lt; 1 unless finite horizon in which case &amp;lt;= 1&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;initializing the network weights
+&lt;ul&gt;
+&lt;li&gt;this is consistently surprisingly important&lt;/li&gt;
+&lt;li&gt;see &lt;a href=&#34;http://cs231n.github.io/neural-networks-2/&#34;&gt;http://cs231n.github.io/neural-networks-2/&lt;/a&gt; (Weight Initialization)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;action space
+&lt;ul&gt;
+&lt;li&gt;if this is large then it can make learning slow&lt;/li&gt;
+&lt;li&gt;if this really should be continuous, then consider policy gradient methods&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;regularization / dropout
+&lt;ul&gt;
+&lt;li&gt;many papers don&amp;rsquo;t report using regularization or dropout&lt;/li&gt;
+&lt;li&gt;empirically it can help in certain situations
+&lt;ul&gt;
+&lt;li&gt;for example when the training MDP is different from the testing MDP and you need the policy to generalize&lt;/li&gt;
+&lt;li&gt;start with small values for l2 reg (0.00001)&lt;/li&gt;
+&lt;li&gt;dropout can vary dramatically in effectiveness (dropout ratio of 0.01 to 0.5)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;network hyperparams
+&lt;ul&gt;
+&lt;li&gt;number of layers
+&lt;ul&gt;
+&lt;li&gt;start small (2) and increase as needed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;number of units
+&lt;ul&gt;
+&lt;li&gt;start small (32) and increase as needed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;nonlinearity
+&lt;ul&gt;
+&lt;li&gt;start with relu or tanh&lt;/li&gt;
+&lt;li&gt;maxout, elu, etc for getting extra benefit&lt;/li&gt;
+&lt;li&gt;common pitfall: applying a nonlinearity to the last output of the network
+&lt;ul&gt;
+&lt;li&gt;this should just be a affine layer (dot(x,W) + b)&lt;/li&gt;
+&lt;li&gt;in the relu case, applying it to the last layer makes all the output positive, which will break it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;optimizer
+&lt;ul&gt;
+&lt;li&gt;start with adam or rmsprop&lt;/li&gt;
+&lt;li&gt;then check out (&lt;a href=&#34;http://cs231n.github.io/neural-networks-3/&#34;&gt;http://cs231n.github.io/neural-networks-3/&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;rewards
+&lt;ul&gt;
+&lt;li&gt;you can clip them between -1 and +1, but you lose a lot of information&lt;/li&gt;
+&lt;li&gt;if you have to use certain reward values larger than that, it can help to normalize them to be between -1 and +1&lt;/li&gt;
+&lt;li&gt;if you have control over the rewards, then consider using reward shaping&lt;/li&gt;
+&lt;li&gt;if the rewards are too large, then you can end up with e.g., relus dying&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;dqn variations
+&lt;ul&gt;
+&lt;li&gt;double dqn works a lot better, particularly if the rewards are negative
+&lt;ul&gt;
+&lt;li&gt;this is particularly easy to implement, so it&amp;rsquo;s generally worth a shot&lt;/li&gt;
+&lt;li&gt;(&lt;a href=&#34;https://arxiv.org/abs/1509.06461&#34;&gt;https://arxiv.org/abs/1509.06461&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;dueling network can be better
+&lt;ul&gt;
+&lt;li&gt;(&lt;a href=&#34;https://arxiv.org/abs/1509.06461&#34;&gt;https://arxiv.org/abs/1509.06461&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;replay memory variations
+&lt;ul&gt;
+&lt;li&gt;prioritized replay
+&lt;ul&gt;
+&lt;li&gt;oversamples certain experiences based on td-error and uses importance sampling in the loss to maintain unbiased state distribution&lt;/li&gt;
+&lt;li&gt;helps a lot with sparse rewards&lt;/li&gt;
+&lt;li&gt;(&lt;a href=&#34;https://arxiv.org/abs/1511.05952&#34;&gt;https://arxiv.org/abs/1511.05952&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
