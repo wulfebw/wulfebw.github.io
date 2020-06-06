@@ -1,0 +1,1121 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.8.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Blake Wulfe">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Introducing a Super Smash Bros. 64 RL environment and initial experiments">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://wulfebw.github.io/post/ssb64-rl-01/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-97451925-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+
+  function gtag() {
+      dataLayer.push(arguments);
+  }
+
+  function trackOutboundLink(url, target) {
+    gtag('event', 'click', {
+         'event_category': 'outbound',
+         'event_label': url,
+         'transport_type': 'beacon',
+         'event_callback': function () {
+           if (target !== '_blank') {
+             document.location = url;
+           }
+         }
+    });
+    console.debug("Outbound link clicked: " + url);
+  }
+
+  function onClickCallback(event) {
+    if ((event.target.tagName !== 'A') || (event.target.host === window.location.host)) {
+      return;
+    }
+    trackOutboundLink(event.target, event.target.getAttribute('target'));  
+  }
+
+  gtag('js', new Date());
+  gtag('config', 'UA-97451925-1', {});
+
+  
+  document.addEventListener('click', onClickCallback, false);
+</script>
+
+
+  
+
+
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu74c5e83fe8339e265cecdcef41753095_57754_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu74c5e83fe8339e265cecdcef41753095_57754_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="https://wulfebw.github.io/post/ssb64-rl-01/">
+
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="og:site_name" content="Blake Wulfe">
+  <meta property="og:url" content="https://wulfebw.github.io/post/ssb64-rl-01/">
+  <meta property="og:title" content="Super Smash Bros. 64 AI: Reinforcement Learning Part 1: The Environment | Blake Wulfe">
+  <meta property="og:description" content="Introducing a Super Smash Bros. 64 RL environment and initial experiments"><meta property="og:image" content="https://wulfebw.github.io/post/ssb64-rl-01/featured.png">
+  <meta property="twitter:image" content="https://wulfebw.github.io/post/ssb64-rl-01/featured.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2020-06-05T22:14:38-07:00">
+    
+    <meta property="article:modified_time" content="2020-06-05T22:14:38-07:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://wulfebw.github.io/post/ssb64-rl-01/"
+  },
+  "headline": "Super Smash Bros. 64 AI: Reinforcement Learning Part 1: The Environment",
+  
+  "image": [
+    "https://wulfebw.github.io/post/ssb64-rl-01/featured.png"
+  ],
+  
+  "datePublished": "2020-06-05T22:14:38-07:00",
+  "dateModified": "2020-06-05T22:14:38-07:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Blake Wulfe"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Blake Wulfe",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://wulfebw.github.io/images/icon_hu74c5e83fe8339e265cecdcef41753095_57754_192x192_fill_lanczos_center_2.png"
+    }
+  },
+  "description": "Introducing a Super Smash Bros. 64 RL environment and initial experiments"
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Super Smash Bros. 64 AI: Reinforcement Learning Part 1: The Environment | Blake Wulfe</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">Blake Wulfe</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">Blake Wulfe</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-end" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Blog</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#publications"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#projects"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/files/cv.pdf"><span>Resume</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+<div class="article-container pt-3">
+  <h1>Super Smash Bros. 64 AI: Reinforcement Learning Part 1: The Environment</h1>
+
+  
+
+  
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Jun 5, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    13 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/category/reinforcement-learning/">reinforcement learning</a>, <a href="/category/ssb64/">ssb64</a></span>
+  
+
+</div>
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+<div class="article-header article-container featured-image-wrapper mt-4 mb-4" style="max-width: 450px; max-height: 300px;">
+  <div style="position: relative">
+    <img src="/post/ssb64-rl-01/featured.png" alt="" class="featured-image">
+    
+  </div>
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      <h2 id="summary">Summary</h2>
+<p>The existing Nintendo 64 Reinforcement learning environments have some disadvantages. 
+<a href="https://github.com/openai/retro" target="_blank" rel="noopener">Gym-Retro</a> can almost support N64 emulation, but not quite. I made some changes to the Gym-Retro code to allow for N64 environments. This post describes some of the challenges in doing that, initial results in training an agent in Super Smash Bros. 64, and next steps.</p>
+<ul>
+<li>You can find the code 
+<a href="https://github.com/wulfebw/retro" target="_blank" rel="noopener">here</a>.</li>
+<li>Here&rsquo;s an example of an RL agent (Pikachu) playing the game AI (level 9 DK):</li>
+</ul>
+<figure style="text-align:center;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/xlh6xhtkBRY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+</figure>
+<h2 id="environment">Environment</h2>
+<h3 id="motivation">Motivation</h3>
+<p>There are some existing N64 RL environments. 
+<a href="https://github.com/bzier/gym-mupen64plus" target="_blank" rel="noopener">Gym-Mupen64Plus</a> is the main one. It works by running an N64 emulator, taking screenshots of the game, and parsing the screen to compute rewards. This has some issues. First, it means that the environment runs at a variable rate with respect to the agent (i.e., the time between taking an action and having it enacted in the environment is variable). Second, parsing the screen is brittle and not scalable (to more games) compared with reading values from RAM. Third, the screen-shotting mechanism has some disadvantages, for example it&rsquo;s difficult to run multiple environments at once.</p>
+<p>The goal of this project was to implement an RL environment for N64 that didn&rsquo;t have these issues, and that operated like a typical gym environment.</p>
+<h3 id="challenges">Challenges</h3>
+<p>When I started, I considered a few options for implementing the environment, and settled on adapting the 
+<a href="https://github.com/bzier/gym-mupen64plus" target="_blank" rel="noopener">Gym-Retro</a> codebase to allow for N64 emulation. I wasn&rsquo;t sure when I started why Gym-Retro didn&rsquo;t already support N64 games. It turns out the main reasons for that are (i) N64 uses dynamic memory locations for game data, and Gym-Retro is implemented assuming static memory locations and (ii) emulating N64 visuals requires adding OpenGL support (and even with this support emulation is fairly slow).</p>
+<h4 id="n64-emulation">N64 Emulation</h4>
+<p>Gym-Retro incorporates the console emulators (called &ldquo;cores&rdquo;, borrowing 
+<a href="https://www.libretro.com" target="_blank" rel="noopener">libretro</a> terminology) as subrepos using 
+<a href="https://github.com/ingydotnet/git-subrepo" target="_blank" rel="noopener">git-subrepo</a>. I took this same approach, and added 
+<a href="https://github.com/libretro/mupen64plus-libretro-nx" target="_blank" rel="noopener">Mupen64Plus-Next</a>. This seemed to be the most actively developed libretro N64 core.</p>
+<h4 id="n64-dynamic-memory">N64 dynamic memory</h4>
+<p>N64 games (at least Super Smash Bros. 64) store data in memory in dynamic locations, but the address of that data is stored in a constant location. For example, the health of player one might be stored (approximately) anywhere in the block of RAM from <code>0x80000000</code> to <code>0x88000000</code> (see 
+<a href="https://en.wikibooks.org/wiki/N64_Programming/Memory_mapping" target="_blank" rel="noopener">details</a> on N64 memory map); however, the pointer to this health value is always stored at <code>0x80000000</code> + <code>0x000A50E8</code> + <code>0x00000020</code> + <code>0x0000004C</code>.</p>
+<p>Gym-Retro isn&rsquo;t designed for this sort of dynamic memory lookup, which is (I believe) partially why N64 wasn&rsquo;t supported. In order to handle this, I (approximately) copied the approach taken by 
+<a href="http://tasvideos.org/BizHawk.html" target="_blank" rel="noopener">BizHawk</a> of having a separate memory perform the data lookup, but implemented this in python instead of c++. One subtle aspect to this is that the data pointers refer to absolute locations in memory, but the memory available is just the RDRAM section of size <code>0x08000000</code>. So reading a location in memory ends up looking like:</p>
+<pre><code class="language-python"># Skipping the rest of the class...
+def read_address(self, ptr):
+    self.assert_valid_ram_address(ptr)
+    addr_list = self.ram[ptr:ptr + self.addr_size]
+    abs_addr = convert_byte_list_to_int(addr_list)
+    rel_addr = abs_addr - self.rambase
+    self.assert_valid_ram_address(rel_addr)
+    return rel_addr
+</code></pre>
+<p>I copied this approach from 
+<a href="https://github.com/Isotarge/ScriptHawk" target="_blank" rel="noopener">ScriptHawk</a>.</p>
+<h4 id="opengl">OpenGL</h4>
+<p>The second challenge in supporting N64 in Gym-Retro is that the N64 libretro core requires that the libretro frontend provide OpenGL support. This requires some effort to implement, but it also means that the environment will be fairly slow to simulate because rendering 3d graphics (even using OpenGL) is slower than rendering the 2d graphics used in the supported cores (like Atari). I know next to nothing about OpenGL, so I basically copied the minimal libretro frontend code from 
+<a href="https://github.com/heuripedes/sdlarch" target="_blank" rel="noopener">sdlarch</a> into the Gym-Retro emulator class (though adapted it to use 
+<a href="https://www.glfw.org/" target="_blank" rel="noopener">GLFW</a> instead of 
+<a href="https://www.libsdl.org/release/SDL-1.2.15/docs/html/guidevideoopengl.html" target="_blank" rel="noopener">SDL</a> because GLFW provided all the functionality I needed and is a lot smaller and could be directly incorporated into the project as a subrepo).</p>
+<p>Even though I just copied the sdlarch code into the emulator, it took some effort to figure out where everything should go. I couldn&rsquo;t find much documentation on how to implement a libretro frontend with OpenGL support online.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>The end result is an N64 RL environment using Gym-Retro. Running 16 environments in parallel (on 8 cores) I&rsquo;m able to get 45 frames per second. This is much slower than, for example, 
+<a href="https://github.com/openai/procgen" target="_blank" rel="noopener">procgen</a>, which can apparently simulate &ldquo;thousands of steps per second on a single core&rdquo;. This might be part of the reason OpenAI moved away from retro to procgen (in addition to the generalization properties of procgen).</p>
+<h2 id="initial-experiments">Initial Experiments</h2>
+<p>After getting the environment running I ran some initial experiments to make sure it works. These are &ldquo;initial&rdquo; in that they involve training against the game AI instead of self-play.</p>
+<h3 id="environment-setup">Environment Setup</h3>
+<p>For these initial experiments, the environment is set up for a single match between Pikachu (the controlled agent) and a level 9 DK. DK acts deterministically (I wasn&rsquo;t sure about this beforehand, but this is clear from the results), though items are included and occur randomly. Since DK&rsquo;s behavior is determined by the items, DK also acts randomly, though in practice this doesn&rsquo;t matter much.</p>
+<ul>
+<li>Observation space is a stack of two color images. I started with grayscale images, but the agent didn&rsquo;t perform well, I believe because Pikachu blended into the background too much. I think four frames would help since two frames seems not quite Markovian, but using four color frames slowed down training a fair amount. I also used color images because they might make it easier to identify items.</li>
+</ul>
+<figure>
+  <img src="grayscale.png" alt="grayscale"/>
+  <figcaption>Where's Pikachu?</figcaption>
+</figure>
+<ul>
+<li>Action space is a multi-discrete space: two dimensions for directional and one for the button press. I could have alternatively used a multi-class action space, but it would have come out to be size 36, which seemed fairly large.</li>
+<li>Reward Function is +1 for killing DK, -1 for dying, +damage dealt / 100. I initially started with -damage received / 100, but that resulted in too much avoidance behavior.</li>
+</ul>
+<p>I chose DK as the opponent because the goal is ultimately to play the trained AI, and I&rsquo;d prefer to play with DK. It turns out this isn&rsquo;t a great choice of opponent for a sanity check because DK can take a lot of damage without dying. This results in the agent needing a great deal of exploration to find the value in actually killing DK as opposed to just damaging him a bunch. This is also an issue because the item drops include health, which DK tends to pick up thereby extending the matches.</p>
+<h3 id="agent">Agent</h3>
+<h4 id="reinforcement-learning-algorithm">Reinforcement Learning Algorithm</h4>
+<p>I started out using the 
+<a href="https://github.com/openai/baselines" target="_blank" rel="noopener">baselines</a> implementation of PPO. My plan was originally to compare at least with DQN, but it turns out that because DK acts deterministically (disregarding items) the policy PPO learns is basically a deterministic sequence. For this reason I suspect that 
+<a href="https://arxiv.org/abs/1709.06009" target="_blank" rel="noopener">Brute</a> would probably do better than PPO in this setting. This isn&rsquo;t much of an issue because the real goal is to train an agent through self-play where a deterministic sequence would perform poorly. This uses the 
+<a href="https://arxiv.org/abs/1802.01561" target="_blank" rel="noopener">Impala CNN</a> because the smaller CNNs didn&rsquo;t work, which is consistent with some of the results on procgen.</p>
+<h3 id="results">Results</h3>
+<p>Training for 10 million steps took roughly 3 days on an 8-core machine with an RTX 2070. The plot of average episode reward during training shows fairly consistent improvement, though it trailed off towards the end:</p>
+<figure style="text-align:center;">
+    <img src="training.png" alt="training curve" width="600"/>
+</figure>
+<p>Here are two separate matches. In both cases, Pikachu executes (what seems to be) an identical sequence of actions up until a certain point, after which it starts to improvise:</p>
+<figure style="text-align:center;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/xlh6xhtkBRY" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <figcaption>I think Pikachu might be trying to pick up an item here, but is just facing the wrong way.</figcaption>
+</figure>
+<figure style="text-align:center;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/YhzcUxDBPrE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    <figcaption>This one involved more improvisation. It seems like Pikachu has at least learned to perform an up-B maneuver when off the map.</figcaption>
+</figure>
+<h2 id="future-work">Future Work</h2>
+<h3 id="environment-1">Environment</h3>
+<h4 id="observation-space">Observation Space</h4>
+<ul>
+<li>Vision: I think the visual case is approximately as performant as it&rsquo;s going to get.</li>
+<li>RAM: the environment provides access to ram, but it currently requires writing a memory class for every game. This could be generalized so that the memory locations just need to be specified in a text file.</li>
+<li>Manual feature sets: 
+<a href="https://openai.com/projects/five/" target="_blank" rel="noopener">OpenAI 5</a> and 
+<a href="https://deepmind.com/blog/article/alphastar-mastering-real-time-strategy-game-starcraft-ii" target="_blank" rel="noopener">AlphaStar</a> operate on manually designed sets of features derived from RAM. It&rsquo;s likely that if the goal is to build an RL agent for integration into SSB64 Mods that this is the approach that should be taken because training will be faster and deployment will be lighter-weight. Implementing this would require running the emulator without doing any screen rendering, which would likely require writing a mupen64plus visualization plugin that just does nothing. I suspect that this will be the only way to get good self-play agents working because rendering the screen is too slow and I don&rsquo;t have that much computational resources for doing this.</li>
+</ul>
+<h4 id="action-space">Action Space</h4>
+<p>A comparison of the multi-discrete action space with the multi-class action space might be worthwhile. Multi-class for example performed better in the 
+<a href="https://wulfebw.github.io/post/ssb64-bc/" target="_blank" rel="noopener">behavioral cloning case</a>, but that&rsquo;s a somewhat large action space to use for reinforcement learning, which might be slower to learn than the multi-discrete option.</p>
+<h4 id="games">Games</h4>
+<p>The environment should work for all N64 games, though I believe each will require its own RAM specifications. Those are largely available via 
+<a href="https://github.com/Isotarge/ScriptHawk" target="_blank" rel="noopener">ScriptHawk</a>, though the values there differed from what I found in some cases.</p>
+<h3 id="agent-1">Agent</h3>
+<p>A Recurrent policy might be worth trying. There are also questions about how the policy will work in the self-play setting. For example, how will it know which agent it is controlling? Chances are it won&rsquo;t be able to based on the screen alone and some additional information will have to be provided via the RAM.</p>
+<p>A comparison between DQN, MuZero, and other model-based methods could be interesting. DQN might be more sample efficient, and that would help because the interaction here is the bottleneck. MuZero could be interesting because this is effectively a competitive environment, and explicitly modeling it as one might improve performance. A model-based approach using 
+<a href="https://arxiv.org/abs/1911.12247" target="_blank" rel="noopener">Contrasitve Learning of Structured World Models</a> (C-SWM) could help improve sample efficiency via an object-based inductive bias. I tried this out on the behavioral cloning dataset and it seems to give some interesting results:</p>
+<figure>
+    <img src="ssb64-cswm.gif" alt="ssb64-cswm" width="200"/>
+    <figcaption>C-SWM applied to a SSB64 dataset.</figcaption>
+</figure>
+<p>It seems to separate out the foreground from the background, but not the agents. I think correcting for the camera movement could fix that. Learning the model for planning purposes like in MuZero might also put greater emphasis on the agents.</p>
+<h3 id="deployment">Deployment</h3>
+<p>The goal is to be able to play an agent trained through self-play. You&rsquo;d ideally be able to use a controller. So I&rsquo;ll need to write a player agent that takes input from a controller and passes that to the gym environment. This shouldn&rsquo;t be too hard using the inputs 
+<a href="https://github.com/zeth/inputs" target="_blank" rel="noopener">package</a>.</p>
+<h2 id="lessons">Lessons</h2>
+<h3 id="gym-retro">Gym-Retro</h3>
+<p>Here&rsquo;s how this works: the python interface is provided via 
+<a href="https://github.com/pybind/pybind11" target="_blank" rel="noopener">pybind11</a> (see retro.cpp). retro.cpp has an Emulator object defined in emulator.h/cpp. The emulator class is actually a libretro frontend, though it only implements some of the frontend functionality. This class interacts with libretro cores by dynamically loading functions from them. The integration UI is a UI on top of the emulator with some search functionality. The search functionality doesn&rsquo;t work with N64 due to its use of dynamic memory locations.</p>
+<h3 id="bugs--things-that-took-a-long-time-to-figure-out">Bugs / things that took a long time to figure out</h3>
+<ul>
+<li>One bug I spent a long time on before I realized that N64 used dynamic memory locations was getting the search functionality in the integration UI to work. There was a bug where the rambase was loaded from a file as a signed int, which when converted to a size_t gave an incorrect value, but only if the rambase was large enough. Probably spent 2 hours on that.</li>
+<li>I typically use pytorch, but was using tensorflow since baselines uses it. Instead of using baselines&rsquo; <code>run</code> function I just implemented my own in a script, but didn&rsquo;t look at <code>run</code> carefully and missed the part where they set a specific tensorflow gpu config. 
+<a href="https://stackoverflow.com/questions/34199233/how-to-prevent-tensorflow-from-allocating-the-totality-of-a-gpu-memory" target="_blank" rel="noopener">Apparently</a> tensorflow expands to use all (?) of the gpu memory. This resulted in mysterious segfaults from OpenGL that were difficult to debug.</li>
+<li>Figuring out the format of the <code>n64.json</code> file took a long time. I don&rsquo;t think there are docs on how this is defined. So here&rsquo;s what everything is as far as I can tell:
+<ul>
+<li><code>lib</code>: this should be a prefix of the name of the shared library the core is compiled to. So for instance mupen64plus is compiled to mupen64plus_next_libretro.so. So <code>lib</code> should be set to &ldquo;mupen64plus_next&rdquo;. Furthermore, after compiling the core each time, you need to copy the shared library to retro/retro/cores. This is done by setup.py initially, but if you recompile you have to do it manually.</li>
+<li><code>ext</code>: extension of the rom files for this core.</li>
+<li><code>types</code>: I believe this is only used by the searching functionality to limit the scope of its search for variables to the specified types.</li>
+<li><code>rambase</code>: the location in memory where the relevant portion of ram starts. In the n64 this is 0x80000000. This has an effect on how the emulator reads the ram so you have to set it correctly. To find out what value to use, look up the &ldquo;memory map&rdquo; for your core.</li>
+<li><code>keybinds</code>: these are the keyboard keys used to manually control the environment.</li>
+<li><code>buttons</code>: these are the actual button values used to take actions, and (I believe) their order does matter. It needs to match the order used in the core/libretro.h file. So for example, atari2600/libretro.h:178 shows the button ordering. The buttons in this json file need to match that. All the libretro cores implement a similar ordering it seems.</li>
+<li><code>actions</code>: each row is a dimension of the action space (in the multi-discrete case). Within each dimension, each element is an action in that dimension. Within each action, the elements are the buttons that result in that action.</li>
+</ul>
+</li>
+<li>What to do about the analog stick in N64? The analog stick of the other cores just provides directionals, but in N64 it provides the magnitude of the directional, and that has an influence on the behavior in the game. I ended up changing the core to map these fine-grain controls to directionals.</li>
+<li>MAX_PLAYERS: The default MAX_PLAYERS value is 2, but for N64 it should be 4. This resulted in the other players executing random commands when running the game and it took me probably an hour to figure out why that was happening.</li>
+</ul>
+<p>The main tool I used to figure that stuff out was gdb, but debugging a c program called through python, which is not something I realized you could do previously.</p>
+<h3 id="n64-emulation-visualization-plugins">N64 Emulation Visualization Plugins</h3>
+<p>When I first got the emulator working and realized that emulator.h/cpp didn&rsquo;t implement the OpenGL functionality I tried to avoid implementing it myself by using software-defined rendering in the emulator. The library for doing this is referred to as angrylion, and it actually works fine, except that it&rsquo;s very slow, running at about 8 fps compared with OpenGL&rsquo;s 45 fps. However, getting an end-to-end system running with angrylion, and then going back to tackle the relatively difficult task (for me) of implementing the OpenGL functionality for libretro frontends was (accidentally) a good strategy because I probably would have given up if I had had to implement the OpenGL stuff to get anything working. This is mainly because with the angrylion version already implemented, I knew what &ldquo;working&rdquo; looked like, and I also was much more familiar with the system by the time I tried to tackle the OpenGL stuff.</p>
+
+    </div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+  
+    
+    
+    
+      
+    
+    
+    
+    <div class="media author-card content-widget-hr">
+      
+        <img class="avatar mr-3 avatar-circle" src="https://s.gravatar.com/avatar/dc556e6609b3975a154f9e525a73b2b7?s=200')" alt="Blake Wulfe">
+      
+
+      <div class="media-body">
+        <h5 class="card-title"><a href="https://wulfebw.github.io/">Blake Wulfe</a></h5>
+        <h6 class="card-subtitle">Research Engineer</h6>
+        
+        <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+    <li>
+      <a href="mailto:blake.w.wulfe@gmail.com" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://scholar.google.com/citations?user=8erqrHcAAAAJ&amp;hl=en" target="_blank" rel="noopener">
+        <i class="ai ai-google-scholar"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/wulfebw" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://www.linkedin.com/in/blake-wulfe-78b266179/" target="_blank" rel="noopener">
+        <i class="fab fa-linkedin"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/wulfebw" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+</ul>
+
+      </div>
+    </div>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.8/mermaid.min.js" integrity="sha256-lyWCDMnMeZiXRi7Zl54sZGKYmgQs4izcT7+tKc+KUBk=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/highlight.min.js" integrity="sha256-eOgo0OtLL4cdq7RdwRUiGKLX9XsIJ7nGhWEKbohmVAQ=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    <script>const isSiteThemeDark = false;</script>
+    
+
+    
+
+    
+    
+
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <script src="/js/academic.min.6f7ce8be710290b8c431bbc97f405d15.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    
+  </p>
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
