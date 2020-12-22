@@ -579,9 +579,52 @@
 </nav>
 
 
-  <article class="article">
-
   
+<div class="container-fluid docs">
+    <div class="row flex-xl-nowrap">
+      <div class="d-none d-xl-block col-xl-2 docs-toc">
+        <ul class="nav toc-top">
+          <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+        </ul>
+        <nav id="TableOfContents">
+  <ul>
+    <li><a href="#summary">Summary</a></li>
+    <li><a href="#environment">Environment</a>
+      <ul>
+        <li><a href="#motivation">Motivation</a></li>
+        <li><a href="#challenges">Challenges</a></li>
+        <li><a href="#conclusion">Conclusion</a></li>
+      </ul>
+    </li>
+    <li><a href="#initial-experiments">Initial Experiments</a>
+      <ul>
+        <li><a href="#environment-setup">Environment Setup</a></li>
+        <li><a href="#agent">Agent</a></li>
+        <li><a href="#results">Results</a></li>
+      </ul>
+    </li>
+    <li><a href="#future-work">Future Work</a>
+      <ul>
+        <li><a href="#environment-1">Environment</a></li>
+        <li><a href="#agent-1">Agent</a></li>
+        <li><a href="#deployment">Deployment</a></li>
+      </ul>
+    </li>
+    <li><a href="#lessons">Lessons</a>
+      <ul>
+        <li><a href="#gym-retro">Gym-Retro</a></li>
+        <li><a href="#bugs--things-that-took-a-long-time-to-figure-out">Bugs / things that took a long time to figure out</a></li>
+        <li><a href="#n64-emulation-visualization-plugins">N64 Emulation Visualization Plugins</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+        
+      </div>
+      <main class="col-12 col-md-0 col-xl-10 py-md-3 pl-md-5 docs-content" role="main">
+
+        <article class="article">
+            
 
 
 
@@ -677,11 +720,9 @@
 </div>
 
 
-
-  <div class="article-container">
-
-    <div class="article-style">
-      <h2 id="summary">Summary</h2>
+            <div class="article-container">
+              <div class="article-style">
+                <h2 id="summary">Summary</h2>
 <p>The existing Nintendo 64 Reinforcement learning environments have some disadvantages. 
 <a href="https://github.com/openai/retro" target="_blank" rel="noopener">Gym-Retro</a> can almost support N64 emulation, but not quite. I made some changes to the Gym-Retro code to allow for N64 environments. This post describes some of the challenges in doing that, initial results in training an agent in Super Smash Bros. 64, and next steps.</p>
 <ul>
@@ -801,7 +842,7 @@ def read_address(self, ptr):
 <h3 id="bugs--things-that-took-a-long-time-to-figure-out">Bugs / things that took a long time to figure out</h3>
 <ul>
 <li>One bug I spent a long time on before I realized that N64 used dynamic memory locations was getting the search functionality in the integration UI to work. There was a bug where the rambase was loaded from a file as a signed int, which when converted to a size_t gave an incorrect value, but only if the rambase was large enough. Probably spent 2 hours on that.</li>
-<li>I typically use pytorch, but was using tensorflow since baselines uses it. Instead of using baselines&rsquo; <code>run</code> function I just implemented my own in a script, but didn&rsquo;t look at <code>run</code> carefully and missed the part where they set a specific tensorflow gpu config. 
+<li>I typically use pytorch, but was using tensorflow since baselines uses it. Instead of using baselines' <code>run</code> function I just implemented my own in a script, but didn&rsquo;t look at <code>run</code> carefully and missed the part where they set a specific tensorflow gpu config. 
 <a href="https://stackoverflow.com/questions/34199233/how-to-prevent-tensorflow-from-allocating-the-totality-of-a-gpu-memory" target="_blank" rel="noopener">Apparently</a> tensorflow expands to use all (?) of the gpu memory. This resulted in mysterious segfaults from OpenGL that were difficult to debug.</li>
 <li>Figuring out the format of the <code>n64.json</code> file took a long time. I don&rsquo;t think there are docs on how this is defined. So here&rsquo;s what everything is as far as I can tell:
 <ul>
@@ -821,9 +862,8 @@ def read_address(self, ptr):
 <h3 id="n64-emulation-visualization-plugins">N64 Emulation Visualization Plugins</h3>
 <p>When I first got the emulator working and realized that emulator.h/cpp didn&rsquo;t implement the OpenGL functionality I tried to avoid implementing it myself by using software-defined rendering in the emulator. The library for doing this is referred to as angrylion, and it actually works fine, except that it&rsquo;s very slow, running at about 8 fps compared with OpenGL&rsquo;s 45 fps. However, getting an end-to-end system running with angrylion, and then going back to tackle the relatively difficult task (for me) of implementing the OpenGL functionality for libretro frontends was (accidentally) a good strategy because I probably would have given up if I had had to implement the OpenGL stuff to get anything working. This is mainly because with the angrylion version already implemented, I knew what &ldquo;working&rdquo; looked like, and I also was much more familiar with the system by the time I tried to tackle the OpenGL stuff.</p>
 
-    </div>
-
-    
+              </div>
+              
 
 
 
@@ -970,9 +1010,13 @@ def read_address(self, ptr):
   
 
 
-
+            </div>
+        </article>
+  
+      </main>
+    </div>
   </div>
-</article>
+  
 
       
 
