@@ -736,8 +736,7 @@ def sample_configs(...):
 &lt;li&gt;It&amp;rsquo;s a work in progress.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Reinforcement Learning Algorithm&lt;/p&gt;
+&lt;li&gt;Reinforcement Learning Algorithm
 &lt;ul&gt;
 &lt;li&gt;Suboptimal exploration
 &lt;ul&gt;
@@ -784,8 +783,7 @@ def sample_configs(...):
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Model&lt;/p&gt;
+&lt;li&gt;Model
 &lt;ul&gt;
 &lt;li&gt;Forgets previously-learned information, or learns slowly
 &lt;ul&gt;
@@ -838,8 +836,7 @@ def sample_configs(...):
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Optimization&lt;/p&gt;
+&lt;li&gt;Optimization
 &lt;ul&gt;
 &lt;li&gt;Suboptimal optimizer
 &lt;ul&gt;
@@ -855,8 +852,7 @@ def sample_configs(...):
 &lt;li&gt;Learning rate is too high&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Generalization&lt;/p&gt;
+&lt;li&gt;Generalization
 &lt;ul&gt;
 &lt;li&gt;Lack of invariance to irrelevant changes&lt;/li&gt;
 &lt;li&gt;Invariance too strong&lt;/li&gt;
