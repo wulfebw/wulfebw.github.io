@@ -5,12 +5,866 @@
     <link>https://wulfebw.github.io/post/</link>
       <atom:link href="https://wulfebw.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Fri, 05 Jun 2020 22:14:38 -0700</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Tue, 22 Dec 2020 16:25:15 -0800</lastBuildDate>
     <image>
       <url>https://wulfebw.github.io/images/icon_hu74c5e83fe8339e265cecdcef41753095_57754_512x512_fill_lanczos_center_2.png</url>
       <title>Posts</title>
       <link>https://wulfebw.github.io/post/</link>
     </image>
+    
+    <item>
+      <title>Everything I tried and learned in the NeurIPS 2020 Procgen Competition</title>
+      <link>https://wulfebw.github.io/post/procgen/</link>
+      <pubDate>Tue, 22 Dec 2020 16:25:15 -0800</pubDate>
+      <guid>https://wulfebw.github.io/post/procgen/</guid>
+      <description>&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;I participated in the 
+&lt;a href=&#34;https://www.aicrowd.com/challenges/neurips-2020-procgen-competition&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;NeurIPS 2020 Procgen Challenge&lt;/a&gt; with my colleague, Adrien Gaidon, and ended up winning the competition (1st place in the sample efficiency track, 2nd place in the generalization track).&lt;/li&gt;
+&lt;li&gt;This post describes the process I followed, the methods I tried, and lessons learned from the competition.&lt;/li&gt;
+&lt;li&gt;Here&amp;rsquo;s a brief video giving an overview:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;figure style=&#34;text-align:center;&#34;&gt;
+    &lt;iframe width=&#34;560&#34; height=&#34;315&#34; src=&#34;https://www.youtube.com/embed/RwEqFuc6Qt0&#34; frameborder=&#34;0&#34; allow=&#34;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture&#34; allowfullscreen&gt;&lt;/iframe&gt;
+&lt;/figure&gt;
+&lt;h2 id=&#34;background&#34;&gt;Background&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;The competition evaluates reinforcement learning agents on the 
+&lt;a href=&#34;https://github.com/openai/procgen&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Procgen environments&lt;/a&gt;.
+&lt;ul&gt;
+&lt;li&gt;There are two tracks:
+&lt;ul&gt;
+&lt;li&gt;Sample efficiency: For each env, train and evaluate on the full distribution of levels.&lt;/li&gt;
+&lt;li&gt;Generalization: For each env, train on 200 levels, and evaluate on the full distribution.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Participants submit code to train agents. Agents are trained for each environment, and the scores across environments are aggregated to get the final score.
+&lt;ul&gt;
+&lt;li&gt;The final evaluation is on 16 public environments (this counted for half the score), and 4 private environments (the other half of the weight in the score).&lt;/li&gt;
+&lt;li&gt;The agents only have 8 million steps in the environments during training, and can only run training for at most 2 hours&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;process&#34;&gt;Process&lt;/h2&gt;
+&lt;h3 id=&#34;for-deciding-which-method-to-try-next&#34;&gt;For deciding which method to try next&lt;/h3&gt;
+&lt;p&gt;This is basically &amp;ldquo;use the scientific method&amp;rdquo;, but there are a couple aspects specific to RL:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Evaluate the performance of the current best approach
+&lt;ul&gt;
+&lt;li&gt;Plotting learning curves on train / evaluation levels&lt;/li&gt;
+&lt;li&gt;Visualizing the policy at different points during training
+&lt;ul&gt;
+&lt;li&gt;Watch the policy and try to understand why it doesn&amp;rsquo;t perform better / where it gets stuck / killed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;List all the reasons the agent might be performing suboptimally in a given environment or across environments
+&lt;ul&gt;
+&lt;li&gt;See Appendix 1 for an outline of reasons&lt;/li&gt;
+&lt;li&gt;This often involves doing a literature review / looking for relevant papers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Choose a reason, and design an experiment to check if that really is the reason
+&lt;ul&gt;
+&lt;li&gt;Often the experiment is trying out some method to address the problem&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Repeat&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;for-checking-whether-an-approach-is-implemented-correctly&#34;&gt;For checking whether an approach is implemented correctly&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;This is the process I followed after implementing an approach / method to check if I implemented it correctly
+&lt;ul&gt;
+&lt;li&gt;In RL it&amp;rsquo;s often difficult to tell if you correctly implemented something because often the agent will perform well / behave reasonably even if the method is implemented incorrectly
+&lt;ul&gt;
+&lt;li&gt;The extent to which this is the case varies based on what you&amp;rsquo;re implementing (e.g., getting the training algorithm wrong will generally be more noticeable than getting an exploration strategy wrong)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Run training on a single, easy level in Coinrun&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;I found an easy training level by sequentially going through the levels on Coinrun:
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;python -m procgen.interactive --env-name coinrun --level-seed 4 --distribution-mode easy
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;The level just involves learning to move to the right:
+&lt;figure class=img-fig&gt;
+   &lt;img src=&#34;easy_coinrun.png&#34; alt=&#34;grayscale&#34; class=&#34;img-sm&#34;/&gt;
+&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;Run training for ~5 minutes and if the agent hasn&amp;rsquo;t learned to move right, then assume there&amp;rsquo;s a bug
+&lt;ul&gt;
+&lt;li&gt;This works when using PPO, but it doesn&amp;rsquo;t work when using some other methods
+&lt;ul&gt;
+&lt;li&gt;DQN is particularly slow to learn early in training, so it can take much longer to pass this sanity check when using it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run training on multiple levels of Coinrun&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;I used Coinrun because it&amp;rsquo;s probably the easiest environment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run training on all (or relevant subset) of envs&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;for-running-experiments&#34;&gt;For running experiments&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;The competition is based on the 
+&lt;a href=&#34;https://docs.ray.io/en/master/rllib.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;rllib package&lt;/a&gt;, which is built on top of 
+&lt;a href=&#34;https://docs.ray.io/en/master/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ray&lt;/a&gt;, so I used ray for running hyperparam searches / experiments.
+&lt;ul&gt;
+&lt;li&gt;ray tune has a 
+&lt;a href=&#34;https://simon-ray.readthedocs.io/en/doc-new-theme/tune/api_docs/execution.html#tune-run-experiments&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&lt;code&gt;run_experiments&lt;/code&gt;&lt;/a&gt; function, that runs a set of experiments, where those experiments can be specified as a set of configuration files&lt;/li&gt;
+&lt;li&gt;So I basically wrote a script to generate the configuration files for experiments I want to run
+&lt;ul&gt;
+&lt;li&gt;
+&lt;a href=&#34;https://github.com/wulfebw/neurips2020-procgen/blob/master/multi_train.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Here&amp;rsquo;s&lt;/a&gt; the script
+&lt;ul&gt;
+&lt;li&gt;The script uses a 
+&lt;a href=&#34;https://stackoverflow.com/questions/9098194/name-parts-of-iterables-in-itertools-products&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;(named) cross product&lt;/a&gt; for grid searches:
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from itertools import product, starmap
+from collections import namedtuple
+
+def named_product(**items):
+    Product = namedtuple(&#39;Product&#39;, items.keys())
+    return starmap(Product, product(*items.values()))
+            
+...
+def sample_configs(...):
+    parameter_settings = named_product(
+        learning_rate=[1e-4, 1e-3],
+        num_sgd_iter=[1, 2],
+        ...,
+    )
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ul&gt;
+&lt;li&gt;This gives a &lt;code&gt;namedtuple&lt;/code&gt; object for each set of parameters, which helps simplify the code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I also organized hyperparameters into different classes, which helps when dealing with a large number of hyperparameters&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;approach&#34;&gt;Approach&lt;/h2&gt;
+&lt;h3 id=&#34;methods-used-in-the-solution-we-submitted&#34;&gt;Methods used in the solution we submitted&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;This section covers the approach we ended up using in the winning solution&lt;/li&gt;
+&lt;li&gt;There were four main categories of methods we used:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;rl-algorithm&#34;&gt;RL algorithm&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;We used 
+&lt;a href=&#34;https://arxiv.org/abs/2009.04416&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Phasic Policy Gradient (PPG)&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;PPG is basically an extension of 
+&lt;a href=&#34;https://arxiv.org/abs/1707.06347&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PPO&lt;/a&gt; that&amp;rsquo;s more sample efficient
+&lt;ul&gt;
+&lt;li&gt;It&amp;rsquo;s more sample efficient because it performs more updates with a given batch of data than PPO (though only to the value function), and because it avoids or minimizes gradient interference between the gradients from the policy and value objectives&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;See the paper for details since it&amp;rsquo;s presented clearly there&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We used the single-network variant of PPG to improve computational efficiency
+&lt;ul&gt;
+&lt;li&gt;This is because of the 2-hour time limit for training&lt;/li&gt;
+&lt;li&gt;In the paper, they detach the value head (during policy updates) when using a single network, but we found this resulted in some instability (e.g., the network would collapse in some envs)
+&lt;ul&gt;
+&lt;li&gt;They mention they were worried about this in the paper, but that it wasn&amp;rsquo;t a problem for them&lt;/li&gt;
+&lt;li&gt;My guess is that changes to other hyperparameters resulted in it causing problems for us&lt;/li&gt;
+&lt;li&gt;Instead of detaching the value head, we just reduced the value loss coefficient&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We 
+&lt;a href=&#34;https://github.com/wulfebw/neurips2020-procgen/blob/master/algorithms/data_augmenting_ppo_agent/sync_phasic_optimizer.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;implemented&lt;/a&gt; PPG in rllib by implementing a new &lt;code&gt;PolicyOptimizer&lt;/code&gt; subclass
+&lt;ul&gt;
+&lt;li&gt;It just stores the states and value targets in a buffer, and runs the value / auxiliary epochs occasionally&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;data-augmentation&#34;&gt;Data augmentation&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;We originally used data augmentation to improve generalization performance, but it turned out that it also improved sample efficiency
+&lt;ul&gt;
+&lt;li&gt;I believe the reason for this is that the data augmentation prevents overfitting to the levels observed so far&lt;/li&gt;
+&lt;li&gt;This results in the policy generalizing better to unseen levels it encounters during training&lt;/li&gt;
+&lt;li&gt;As a result, it performs better in the environment more quickly, which allows it to learn about the optimal policy more quickly&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We tried the methods from this 
+&lt;a href=&#34;https://arxiv.org/abs/2004.14990&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paper&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;Here&amp;rsquo;s a graphic from the paper showing the effect of the augmentations
+&lt;figure class=img-fig&gt;
+  &lt;img src=&#34;augmentations.png&#34; alt=&#34;grayscale&#34;/&gt;
+&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;We ultimately ended up using the random translation augmentation
+&lt;ul&gt;
+&lt;li&gt;This worked well in most environments&lt;/li&gt;
+&lt;li&gt;Some augmentations worked better in certain environments, but would hurt performance in others&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The random translation code need to run quickly due to the 2-hour time limit, so I ended up implementing it manually instead of using &lt;code&gt;numpy.roll&lt;/code&gt; or something similar
+&lt;ul&gt;
+&lt;li&gt;The implementation is pretty ugly, so I won&amp;rsquo;t include it (see 
+&lt;a href=&#34;https://github.com/wulfebw/neurips2020-procgen/blob/master/algorithms/data_augmentation/data_augmentation.py&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;here&lt;/a&gt;), but it ended up being about 4x faster than &lt;code&gt;numpy.roll&lt;/code&gt; (there might be a more suitable function in numpy, but couldn&amp;rsquo;t find one)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;rl-tricks&#34;&gt;RL tricks&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;We tried the RL tricks from this 
+&lt;a href=&#34;https://arxiv.org/abs/2005.12729&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paper&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;That paper focuses on continuous control tasks, but we figured the results would likely transfer&lt;/li&gt;
+&lt;li&gt;They found that reward normalization was the most important implementation detail&lt;/li&gt;
+&lt;li&gt;And that&amp;rsquo;s also what we found, and ended up using only that change&lt;/li&gt;
+&lt;li&gt;In the paper, they discuss the options for normalizing rewards
+&lt;ul&gt;
+&lt;li&gt;The most obvious thing to do is to normalize the reward values themselves by subtracting their mean and dividing by their standard deviation
+&lt;ul&gt;
+&lt;li&gt;The main issue with this is that the goal is for the target-being-predicted (i.e., the state-value) to be normalized
+&lt;ul&gt;
+&lt;li&gt;But normalizing the rewards individually doesn&amp;rsquo;t accomplish this
+&lt;ul&gt;
+&lt;li&gt;For example, if you assume the normalized rewards are distributed normally with zero mean and unit variance, then their sum will be normally distributed with zero mean, but with variance 
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Sum_of_normally_distributed_random_variables&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;the sum of the individual variances&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;So instead, you would ideally normalize the returns using their mean / variance
+&lt;ul&gt;
+&lt;li&gt;This is approximately the approach taken by the 
+&lt;a href=&#34;https://github.com/openai/phasic-policy-gradient/blob/master/phasic_policy_gradient/reward_normalizer.py#L59&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;PPG paper&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;They do something where they reverse-discount the observed rewards (see the link for an explanation), which I don&amp;rsquo;t fully understand&lt;/li&gt;
+&lt;li&gt;I just computed the variance of the discounted returns, and divided by that ignoring the discount factor
+&lt;ul&gt;
+&lt;li&gt;I&amp;rsquo;m not sure why they take their approach instead of just doing this&lt;/li&gt;
+&lt;li&gt;One reason might be that early on (in the rollouts) you don&amp;rsquo;t know what the returns are, so how do you normalize by their statistics?
+&lt;ul&gt;
+&lt;li&gt;I just ignored this problem, but it&amp;rsquo;s possible their approach addresses it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The second issue is that you generally do not want to change the mean of reward values in reinforcement learning
+&lt;ul&gt;
+&lt;li&gt;The justification being that (mean-normalizing rewards), 
+&lt;a href=&#34;http://joschu.net/docs/nuts-and-bolts.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;&amp;ldquo;affects the agent&amp;rsquo;s will to live&amp;rdquo;&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;For example, if all the rewards are initially positive, then an agent is incentivized to avoid terminal / absorbing states&lt;/li&gt;
+&lt;li&gt;But if you mean-subtract the rewards, then the agent may be incentivized to seek out terminal / absorbing states (depending on whether it&amp;rsquo;s encountering negative rewards)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;So ultimately I ended up with something along the lines of:
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;def normalize_rewards_running_return(policy, rewards, eps=1e-8):
+    &amp;quot;&amp;quot;&amp;quot;Updates reward statistics, and normalizes rewards by their standard deviation.
+            
+        Args:
+            policy: The policy being optimized
+            rewards: Numpy array of reward values
+            eps: Value to add to denominator to avoid numerical issues
+              
+        Returns:
+            Normalized rewards
+    &amp;quot;&amp;quot;&amp;quot;
+    # Implements Welford&#39;s Algorithm (https://en.wikipedia.org/wiki/Algorithms_for_calculating_variance)
+    policy.reward_stats.update(rewards)
+    return rewards / (policy.reward_stats.std + eps)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;The OpenAI 
+&lt;a href=&#34;https://github.com/openai/phasic-policy-gradient/blob/master/phasic_policy_gradient/reward_normalizer.py#L59&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;implementation&lt;/a&gt; computes a single variance across workers
+&lt;ul&gt;
+&lt;li&gt;I just ignored this aspect and it seemed to work fine&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The second RL trick we used was disincentivizing no-op actions&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A lot of the environments in Procgen have no-op actions (i.e., actions that when taken have no effect)
+&lt;ul&gt;
+&lt;li&gt;Since the agent is limited to 8 million steps, taking no-op actions makes the agent less sample efficient (it basically wastes samples)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;To disincentivize no-op actions, we checked for cases where the observation (i.e., image) didn&amp;rsquo;t change across timesteps
+&lt;ul&gt;
+&lt;li&gt;You could argue that this is taking advantage of a limitation of the Procgen environments, which is that they don&amp;rsquo;t resemble natural images, which would (likely) never have duplicate images across timesteps
+&lt;ul&gt;
+&lt;li&gt;In the real-world case, you have to do something more complicated, for example using some more general 
+&lt;a href=&#34;http://people.idsia.ch/~juergen/creativity.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;intrinsic motivation method&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;From this perspective, penalizing no-ops is basically an efficient, environment-specific, intrinsic motivation strategy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;One environment where it helps a lot is in Miner
+&lt;ul&gt;
+&lt;li&gt;In this case, the agent learns not to run into walls / bricks that won&amp;rsquo;t move&lt;/li&gt;
+&lt;li&gt;But it also learns to rapidly switch between states rather than remain stationary&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;A problem with this approach is that it doesn&amp;rsquo;t work for environments where the image changes despite no-op actions
+&lt;ul&gt;
+&lt;li&gt;For example, in Chaser the image changes because the environment has the chasing agents moving around&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;hyperparameter-tuning&#34;&gt;Hyperparameter tuning&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Hyperparameters have a large impact on the performance of RL algorithms
+&lt;ul&gt;
+&lt;li&gt;PPO is actually less sensitive to hyperparameter values than other algorithms like DQN, but they still matter&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Tuning hyperparameters properly requires a lot of time and/or resources
+&lt;ul&gt;
+&lt;li&gt;To reduce the cost, I generally assumed that hyperparameters were independent whenever reasonable&lt;/li&gt;
+&lt;li&gt;I also ran hyperparamter tuning throughout the competition, tuning only one or two hyperparameters are once to check whether some newly-implemented method improved performance
+&lt;ul&gt;
+&lt;li&gt;As a result, the final hyperparameters were likely suboptimal / outdated&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;This table gives the values of hyperparameters that differ from the default values from the 
+&lt;a href=&#34;https://arxiv.org/abs/1912.01588&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Procgen&lt;/a&gt; paper and that I think are important&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Hyperparameter&lt;/th&gt;
+&lt;th style=&#34;text-align:right&#34;&gt;Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Network Architecture&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;Impala (32, 48, 64)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Rollout Fragment Length&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;16&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Number of Workers&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;7&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Number of Envs per Worker&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;125&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Minibatch Size&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;1750&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;PPG Aux Loss Every k&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;32&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;PPG Aux Loss Number of Epochs&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Value Loss Coefficient&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;0.25&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Framestack&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Dropout Probability&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;0.1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;No-op Penalty&lt;/td&gt;
+&lt;td style=&#34;text-align:right&#34;&gt;-0.1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h6 id=&#34;heading&#34;&gt;&lt;/h6&gt;
+&lt;ul&gt;
+&lt;li&gt;Some comments on these hyperparameter values:
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;strong&gt;number of workers&lt;/strong&gt; and &lt;strong&gt;number of envs per worker&lt;/strong&gt; were set to minimize training wall clock time&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;strong&gt;rollout fragment length&lt;/strong&gt; was set to a much smaller value than that of the original paper (16 versus 256)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The reason being that I wanted the data in each minibatch to be as uncorrelated as possible, and having a small rollout fragment length allowed for running a large number of environments in parallel, which results in less correlated data&lt;/li&gt;
+&lt;li&gt;This mainly seemed to improve consistency of the algorithm, but it also improved performance a great deal on one of the private environments (graph downloaded from submission (since the environment is private), but it&amp;rsquo;s from the &lt;code&gt;Safezone&lt;/code&gt; environment, which other teams reported difficulty with):
+  &lt;figure class=img-fig&gt;
+    &lt;img src=&#34;safezone.png&#34; alt=&#34;grayscale&#34; class=&#34;img-sm&#34;/&gt;
+  &lt;/figure&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;strong&gt;network size&lt;/strong&gt; and &lt;strong&gt;minibatch size&lt;/strong&gt; were tuned jointly over the course of the competition to balance training time and performance&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;strong&gt;value loss coefficient&lt;/strong&gt; was set lower than typical to account for not detaching the value heading (as discussed in the PPG section)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Using a nonzero &lt;strong&gt;dropout probability&lt;/strong&gt; improved performance (surprisingly, because dropout typically slows down training a lot)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The main reason I can think of for why this would be the case is that might improve generalization to new levels sufficiently to compensate for the increase in training time&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;other-methods-we-tried-that-didnt-improve-performance&#34;&gt;Other methods we tried that didn&amp;rsquo;t improve performance&lt;/h3&gt;
+&lt;h4 id=&#34;algorithms&#34;&gt;Algorithms&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;We also tried DQN / 
+&lt;a href=&#34;https://arxiv.org/abs/1710.02298&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Rainbow&lt;/a&gt;, and 
+&lt;a href=&#34;https://arxiv.org/pdf/1801.01290.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Soft Actor-Critic&lt;/a&gt;, and couldn&amp;rsquo;t get either to perform better
+&lt;ul&gt;
+&lt;li&gt;These methods should in theory be more sample efficient because they can reuse the data to a larger extent
+&lt;ul&gt;
+&lt;li&gt;This is because both are off-policy methods&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Rainbow also implements a variety of methods that should improve performance
+&lt;ul&gt;
+&lt;li&gt;For example, 
+&lt;a href=&#34;https://arxiv.org/abs/1706.10295&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Noisy Nets&lt;/a&gt;, 
+&lt;a href=&#34;https://arxiv.org/abs/1511.05952&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;prioritized experience replay&lt;/a&gt;, 
+&lt;a href=&#34;https://arxiv.org/abs/1707.06887&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;distributional RL&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We got DQN to work on some envs, it just required a lot more experience / very slow training (e.g., large target network update interval, small learning rate, etc)
+&lt;ul&gt;
+&lt;li&gt;This matches the result from the Procgen paper
+&lt;ul&gt;
+&lt;li&gt;They give a possible explanation for DQN&amp;rsquo;s poor performance
+&lt;ul&gt;
+&lt;li&gt;Which is basically that the diversity of the levels for each environment gives DQN trouble&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Why DQN has more trouble with diverse environments than e.g., PPO I&amp;rsquo;m not sure&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I think that if you removed the time constraint (two hours) on the training time (while still constraining to 8 million time steps), these methods should be able to achieve better performance
+&lt;ul&gt;
+&lt;li&gt;But given the time constraint, PPG performed better because it already reuses the data to the maximum extent possible (approximately)
+&lt;ul&gt;
+&lt;li&gt;This is the main advantage of PPG: that it gives a way to make PPO more sample efficient through greater sample reuse&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;exploration&#34;&gt;Exploration&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;In many of the environments, dithering exploration strategies are quite poor&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For example, in the Heist environment, a dithering exploration strategy takes a very long time to solve many levels&lt;/li&gt;
+&lt;li&gt;Another example is that in many levels, a single random action can result in the agent being killed
+&lt;ul&gt;
+&lt;li&gt;e.g., Chaser, Miner, Leaper, etc&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;We implemented 
+&lt;a href=&#34;https://arxiv.org/abs/1706.10295&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Noisy Nets&lt;/a&gt;, but for the policy gradient case&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This poses a few challenges for PPO
+&lt;ul&gt;
+&lt;li&gt;For example, adding noise to the policy output when sampling results in the training policy being different from the sampling policy
+&lt;ul&gt;
+&lt;li&gt;Since the PPO update implicitly constrains the policy to not change to much, the additional change due to the noise makes the policy update less efficient&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;You can get around this issue somewhat by maintaining the same noise vector during sampling as during updating
+&lt;ul&gt;
+&lt;li&gt;The problems with this are that maintaining that noise vector is fairly complicated in RLLib, but more importantly with noisy nets that means different samples in each batch might have different fully connected weights
+&lt;ul&gt;
+&lt;li&gt;And running a forward pass with different weights is extremely inefficient (depending somewhat on which weights change)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;As a result of those challenges, we couldn&amp;rsquo;t get noisy nets to improve performance&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;An alternative to Noisy Nets for improving exploration that uses approximately the same intuition (that dithering strategies are worse than temporally-coherent exploration) that works better with PPO is 
+&lt;a href=&#34;https://arxiv.org/pdf/1807.10299.pdf&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;variational options&lt;/a&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;These methods basically all introduce some sort of latent variable as input to the policy&lt;/li&gt;
+&lt;li&gt;And the policy is rewarded for having the latent variable have high mutual information with the future state-action pair(s)&lt;/li&gt;
+&lt;li&gt;The result is that you can reduce dithering in the policy (e.g., by reducing or removing the entropy bonus), and only rely on the noise in the latent variable sampling to provide exploration
+&lt;ul&gt;
+&lt;li&gt;The problem with this for PPO/PPG is, first, that the entropy bonus serves to make the policy update more stable (so getting rid of it makes the algorithm less stable)&lt;/li&gt;
+&lt;li&gt;And, second, it doesn&amp;rsquo;t make sense to deterministically select actions for PPO when sampling rollouts
+&lt;ul&gt;
+&lt;li&gt;The result is that you keep the random action sampling, which diminishes the effect of the variational option because you&amp;rsquo;re still employing dithering exploration&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;form-of-the-policy--model&#34;&gt;Form of the policy / model&lt;/h4&gt;
+&lt;h5 id=&#34;accounting-for-partial-observability&#34;&gt;Accounting for partial observability&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;Some of the environments are partially observable even when provided with the last ~4 frames
+&lt;ul&gt;
+&lt;li&gt;For example, Jumper requires remembering when you last jumped&lt;/li&gt;
+&lt;li&gt;Another example is that caveflyer may require you to remember where you&amp;rsquo;ve already explored for the exit&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;To account for this partial observability, we tried out a recurrent policy
+&lt;ul&gt;
+&lt;li&gt;This slowed down learning relative to the CNN policy to the extent that accounting for the partial observability wasn&amp;rsquo;t worth it&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id=&#34;object-based-inductive-bias&#34;&gt;Object-based inductive bias&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;An idea we tried out early on was to encode an object-based inductive bias
+&lt;ul&gt;
+&lt;li&gt;For example, we tried having the model feature extraction use the model from 
+&lt;a href=&#34;https://arxiv.org/abs/1901.11390&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;MONet&lt;/a&gt; or 
+&lt;a href=&#34;https://arxiv.org/abs/1911.12247&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;C-SWM&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The intuition behind this is that, all the environments involve a relatively small set of interacting objects (small relative to number of pixels)
+&lt;ul&gt;
+&lt;li&gt;If we can represent the state as a set of objects and relationships between them instead of as pixels, we should be able to learn more efficiently
+&lt;ul&gt;
+&lt;li&gt;Because that object-based representation of the state is much lower-dimensional&lt;/li&gt;
+&lt;li&gt;Because the object-based representation encodes some invariances that don&amp;rsquo;t exist in the image representation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;This didn&amp;rsquo;t work because the object representations that were learned didn&amp;rsquo;t correspond to the objects relevant for planning
+&lt;ul&gt;
+&lt;li&gt;For example, the &amp;ldquo;objects&amp;rdquo; discovered by these algorithms were generally the foreground and background of the image instead of e.g., the different agents in the scene
+&lt;ul&gt;
+&lt;li&gt;This makes sense when using an objective based on e.g., reconstructing the observation and not on planning performance&lt;/li&gt;
+&lt;li&gt;But even when using the RL objective exclusively, the object representations learned weren&amp;rsquo;t useful&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;data-augmentation-1&#34;&gt;Data augmentation&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;We tried automatically deciding which data augmentation to use using a multi-arm bandit algorithm
+&lt;ul&gt;
+&lt;li&gt;This approach was proposed in this 
+&lt;a href=&#34;https://arxiv.org/abs/2006.12862&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;paper&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;The approach worked in the paper when they were using 25 million steps, but we found that using 8 million steps wasn&amp;rsquo;t enough to consistently find the best augmentation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We also tried 
+&lt;a href=&#34;https://arxiv.org/abs/2010.10814&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Mixreg&lt;/a&gt;
+&lt;ul&gt;
+&lt;li&gt;This method augments the data by forming a convex combinations of observations and their outputs
+&lt;ul&gt;
+&lt;li&gt;Here&amp;rsquo;s an example taken from the paper:
+&lt;figure class=img-fig&gt;
+    &lt;img src=&#34;mixreg.png&#34; alt=&#34;grayscale&#34; class=&#34;img-sm&#34;/&gt;
+&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;The intuition being that it should result in augmented data that more closely resembles unseen states than other augmentation methods&lt;/li&gt;
+&lt;li&gt;We found that it didn&amp;rsquo;t work as well as just random translation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;lessons&#34;&gt;Lessons&lt;/h2&gt;
+&lt;p&gt;This section covers some miscellaneous lessons learned&lt;/p&gt;
+&lt;h3 id=&#34;about-rl-competition-strategy&#34;&gt;About RL competition strategy&lt;/h3&gt;
+&lt;h4 id=&#34;1-avoid-overfitting-to-the-leaderboard-when-its-not-the-test-set&#34;&gt;1. Avoid overfitting to the leaderboard (when it&amp;rsquo;s not the test set)&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;At the end of the competition I was 7th on the leaderboard, but ended up getting 1st
+&lt;ul&gt;
+&lt;li&gt;The leaderboard was determined based on six public environments, whereas the final ranking was based on the full set of sixteen public environments&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;I suspect part of the reason for this was that some of the other teams were overfitting to the leaderboard (e.g., choosing their algorithm based only on the environments considered by the leaderboard)
+&lt;ul&gt;
+&lt;li&gt;This is a reasonable strategy if you don&amp;rsquo;t have much compute resources to use to evaluate performance across all environments, but should be avoided if possible&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;2-optimize-for-performance-on-private-environments&#34;&gt;2. Optimize for performance on private environments&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The scoring for the competition was &lt;code&gt;0.5 * public score + 0.5 private score&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;The public score was based on 16 envs, whereas the private score was based on 4 envs&lt;/li&gt;
+&lt;li&gt;So everything else being equal it&amp;rsquo;s better to improve performance on the private envs&lt;/li&gt;
+&lt;li&gt;Since the leaderboard leaked information about performance on the private envs this was possible
+&lt;ul&gt;
+&lt;li&gt;There were a few cases where the best hyperparameters on the public envs were different than on the private envs, and I went with the values best on the private envs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;about-rl-competitions&#34;&gt;About RL competitions&lt;/h3&gt;
+&lt;h4 id=&#34;1-rl-competitions-are-largely-about-engineering-as-opposed-to-performing-novel-research&#34;&gt;1. RL competitions are largely about engineering as opposed to performing novel research&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;There is a huge design space for RL algorithms
+&lt;ul&gt;
+&lt;li&gt;By this I mean that a large number of methods exist, and it&amp;rsquo;s unclear without trying them out what will work best&lt;/li&gt;
+&lt;li&gt;Just implementing these existing methods is (a) time consuming and (b) likely to yield &amp;ldquo;state-of-the-art&amp;rdquo; performance&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Implementing existing algorithms is also much lower risk than trying to develop a new algorithm with respect to competition performance
+&lt;ul&gt;
+&lt;li&gt;Highly-novel algorithms often require a few iterations of improvements before they outperform existing methods&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;RL algorithms can be heavily compute-optimized, and RL competitions often require some computational limitations
+&lt;ul&gt;
+&lt;li&gt;There&amp;rsquo;s similarly a large design space / number of options to optimize performance (e.g., how samples are stored, lower-precision training, etc)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;For those reasons, I&amp;rsquo;m not sure RL competitions are a good way to promote the discovery of novel algorithms
+&lt;ul&gt;
+&lt;li&gt;Which is largely the motivation for competitions hosted as part of conferences&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Counter arguments:
+&lt;ul&gt;
+&lt;li&gt;Supervised learning competitions have been shown to be effective at promoting novel research
+&lt;ul&gt;
+&lt;li&gt;E.g., ImageNet&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;It&amp;rsquo;s possible there just wasn&amp;rsquo;t enough interest in this competition
+&lt;ul&gt;
+&lt;li&gt;As a result, novel solutions weren&amp;rsquo;t necessary to win&lt;/li&gt;
+&lt;li&gt;But it&amp;rsquo;s possible that if there was greater interest that novel solutions would be required&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;2-rl-competitions-are-a-good-way-to-find-out-how-well-existing-methods-can-solve-a-task&#34;&gt;2. RL competitions are a good way to find out how well existing methods can solve a task&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;While they may not be great at promoting novelty, they are good at finding out how well existing methods can perform
+&lt;ul&gt;
+&lt;li&gt;This is because they get a lot of people trying out different combinations of existing methods
+&lt;ul&gt;
+&lt;li&gt;i.e., they help cover the large design space&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;In the case of the Procgen competition, the performance of the best approaches was better than the baseline performance by a surprising amount&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;3-the-procgen-benchmark-promotes-general-approaches&#34;&gt;3. The Procgen benchmark promotes general approaches&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Early in the competition I tried a number of methods that were motivated by improving performance in a single environment&lt;/li&gt;
+&lt;li&gt;For almost all these methods, it turned out that while they improved performance in one environment, they hurt performance in the others&lt;/li&gt;
+&lt;li&gt;This makes me think that the diversity of environments in Procgen does a good job of favoring general-purpose methods over environment-specific ones, which I think is an important quality in an RL benchmark&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;4-working-with-multiple-people-in-a-competition-has-a-lot-of-advantages&#34;&gt;4. Working with multiple people in a competition has a lot of advantages&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;This one is a bit obvious, but just including it for my future reference&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;appendices&#34;&gt;Appendices&lt;/h2&gt;
+&lt;h3 id=&#34;appendix-1-reasons-for-suboptimal-performance&#34;&gt;Appendix 1: Reasons for suboptimal performance&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Here&amp;rsquo;s an outline of reasons the agent might be performing suboptimally.&lt;/li&gt;
+&lt;li&gt;This categorization is not perfect:
+&lt;ul&gt;
+&lt;li&gt;It conflates (i) problems, (ii) root causes of problems, and (iii) solutions to those problems.&lt;/li&gt;
+&lt;li&gt;It would be better organized as a graph with cycles instead of as a tree, because different problems can have the same cause.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;It&amp;rsquo;s a work in progress.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Reinforcement Learning Algorithm&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Suboptimal exploration
+&lt;ul&gt;
+&lt;li&gt;Inefficient exploration due to no-op actions&lt;/li&gt;
+&lt;li&gt;Lack of entropy regularization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Policy optimization
+&lt;ul&gt;
+&lt;li&gt;High-variance updates
+&lt;ul&gt;
+&lt;li&gt;Minibatch contains highly-correlated data
+&lt;ul&gt;
+&lt;li&gt;Number of parallel envs / works is too small&lt;/li&gt;
+&lt;li&gt;Rollout fragment length is too long&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Minibatch size too small&lt;/li&gt;
+&lt;li&gt;Discount factor is too large&lt;/li&gt;
+&lt;li&gt;Lack of reward normalization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;High-bias updates
+&lt;ul&gt;
+&lt;li&gt;Rollout fragment length is too short&lt;/li&gt;
+&lt;li&gt;Bootstrap value function estimate poor&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Optimization objective doesn&amp;rsquo;t reflect true objective
+&lt;ul&gt;
+&lt;li&gt;Entropy regularization is too strong&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Value optimization
+&lt;ul&gt;
+&lt;li&gt;target values are not normalized
+&lt;ul&gt;
+&lt;li&gt;Due to a lack of reward normalization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Model&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Forgets previously-learned information, or learns slowly
+&lt;ul&gt;
+&lt;li&gt;Limited model capacity&lt;/li&gt;
+&lt;li&gt;Large weight updates
+&lt;ul&gt;
+&lt;li&gt;Lack of gradient clipping&lt;/li&gt;
+&lt;li&gt;Lack of reward normalization&lt;/li&gt;
+&lt;li&gt;Due to rare events in the environment with high reward value&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Gradient interference
+&lt;ul&gt;
+&lt;li&gt;Sharing policy and value networks&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Internal covariate shift
+&lt;ul&gt;
+&lt;li&gt;Lack of batch normalization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Insufficient / incorrect inductive bias
+&lt;ul&gt;
+&lt;li&gt;Image-related issues
+&lt;ul&gt;
+&lt;li&gt;Overly dependent on texture&lt;/li&gt;
+&lt;li&gt;Overly dependent on color&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Lack of invariance to reasonable transforms
+&lt;ul&gt;
+&lt;li&gt;Poor or insufficient data augmentation&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Partial observability
+&lt;ul&gt;
+&lt;li&gt;Lack of sufficient observation history
+&lt;ul&gt;
+&lt;li&gt;Frame stacking insufficient&lt;/li&gt;
+&lt;li&gt;Form of the model insufficient (e.g., should use RNN instead)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Previous action required&lt;/li&gt;
+&lt;li&gt;Timestep required&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Optimization&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Suboptimal optimizer
+&lt;ul&gt;
+&lt;li&gt;SGD variants&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Poor gradient clipping
+&lt;ul&gt;
+&lt;li&gt;Clipping by global norm slows down learning too much&lt;/li&gt;
+&lt;li&gt;Clipping elementwise prevents learning optimal behavior&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Learning rate is too high&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Generalization&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Lack of invariance to irrelevant changes&lt;/li&gt;
+&lt;li&gt;Invariance too strong&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+    </item>
     
     <item>
       <title>Super Smash Bros. 64 AI: Reinforcement Learning Part 1: The Environment</title>
