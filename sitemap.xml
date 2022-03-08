@@ -3,13 +3,88 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://wulfebw.github.io/publication-type/1/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/author/adrien-gaidon/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/author/ashwin-balakrishna/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/authors/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/author/blake-wulfe/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://wulfebw.github.io/</loc>
-    <lastmod>2020-12-22T16:25:15-08:00</lastmod>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>https://wulfebw.github.io/categories/</loc>
-    <lastmod>2020-12-22T16:25:15-08:00</lastmod>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/publication/dard/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/category/imitation-learning/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/category/irl/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/author/jean-mercat/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/author/logan-ellis/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/publication_types/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/publication/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/category/reward-learning/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/category/rl/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://wulfebw.github.io/author/rowan-mcallister/</loc>
+    <lastmod>2022-01-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -48,37 +123,12 @@
   </url>
   
   <url>
-    <loc>https://wulfebw.github.io/category/rl/</loc>
-    <lastmod>2019-12-09T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://wulfebw.github.io/category/imitation-learning/</loc>
-    <lastmod>2019-07-13T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://wulfebw.github.io/post/ssb64-bc/</loc>
     <lastmod>2019-07-13T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://wulfebw.github.io/publication-type/1/</loc>
-    <lastmod>2018-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://wulfebw.github.io/author/alex-kuefler/</loc>
-    <lastmod>2018-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://wulfebw.github.io/authors/</loc>
-    <lastmod>2018-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://wulfebw.github.io/author/blake-wulfe/</loc>
     <lastmod>2018-03-02T00:00:00+00:00</lastmod>
   </url>
   
@@ -99,16 +149,6 @@
   
   <url>
     <loc>https://wulfebw.github.io/author/mykel-j.-kochenderfer/</loc>
-    <lastmod>2018-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://wulfebw.github.io/publication_types/</loc>
-    <lastmod>2018-03-02T00:00:00+00:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://wulfebw.github.io/publication/</loc>
     <lastmod>2018-03-02T00:00:00+00:00</lastmod>
   </url>
   
