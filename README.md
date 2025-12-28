@@ -12,11 +12,10 @@ Visit `http://localhost:1313` to preview your site.
 
 Edit `config.yml` to customize:
 - Site title and description
+- Profile mode settings (homepage title, subtitle/bio, profile image)
 - Social media links (LinkedIn, GitHub, Twitter, Google Scholar)
 - Navigation menu items
 - Other PaperMod theme settings
-
-Edit `content/_index.md` for your homepage/about page content.
 
 ## Adding Blog Posts
 

@@ -1,6 +1,6 @@
 baseURL: "https://wulfebw.github.io/"
 languageCode: "en-us"
-title: "Blake Wulfe's Website"
+title: "Blake Wulfe"
 theme: "PaperMod"
 
 enableRobotsTXT: true
@@ -14,23 +14,29 @@ minify:
 
 params:
   env: production
-  title: "Blake Wulfe's Website"
+  title: "Blake Wulfe"
   description: "Blake Wulfe's website"
   author: "Blake Wulfe"
   keywords: [Blog, Portfolio]
+  mainSections: []
+  
+  # Profile mode
+  profileMode:
+    enabled: true
+    title: "Blake Wulfe"
+    subtitle: "Your bio paragraph goes here. This is where you can introduce yourself, your interests, your background, and what you're currently working on."
+    # imageUrl: "images/profile.jpg"  # Optional: path to profile image in static/ folder
+  
   # Social links
   socialIcons:
-    - name: linkedin
-      url: "https://www.linkedin.com/in/blake-wulfe-78b266179/"
+    - name: googlescholar
+      url: "https://scholar.google.com/citations?user=8erqrHcAAAAJ&hl=en"
     - name: github
       url: "https://github.com/wulfebw"
-    - name: google-scholar
-      url: "https://scholar.google.com/citations?user=8erqrHcAAAAJ&hl=en"
-  
-  # Homepage layout
-  homeInfoParams:
-    Title: "About"
-    Content: "Your bio paragraph goes here. This is where you can introduce yourself, your interests, and what you do."
+    - name: linkedin
+      url: "https://www.linkedin.com/in/blake-wulfe-78b266179/"
+
+
   
   # Show social icons
   ShowReadingTime: true
@@ -63,6 +69,10 @@ menu:
       name: Tags
       url: /tags/
       weight: 30
+    - identifier: resume
+      name: Resume
+      url: /resume.pdf
+      weight: 40
 
 outputs:
   home:
