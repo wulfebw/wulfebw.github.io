@@ -1,0 +1,12 @@
+/* Custom styles for profile subtitle links */
+.profile .profile_inner span a,
+.profile_inner span a {
+    color: #3399ff !important;
+    text-decoration: underline;
+}
+
+.profile .profile_inner span a:hover,
+.profile_inner span a:hover {
+    opacity: 0.8;
+}
+

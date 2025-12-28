@@ -1,0 +1,98 @@
+baseURL: "https://wulfebw.github.io/"
+languageCode: "en-us"
+title: "Blake Wulfe"
+theme: "PaperMod"
+
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
+params:
+  env: production
+  title: "Blake Wulfe"
+  description: "Blake Wulfe's website"
+  author: "Blake Wulfe"
+  keywords: [Blog, Portfolio]
+  mainSections: []
+  
+  # Profile mode
+  profileMode:
+    enabled: true
+    title: "Blake Wulfe"
+    subtitle: |
+      I am a researcher and engineer building intelligent robots.
+      I previously worked at [Toyota Research Institute](https://www.tri.global/)
+      leading a team training vision language action policies for robotic manipulation. 
+      Before that I worked on prediction for autonomous driving at TRI.
+      
+      <br/>
+      
+      I graduated with a Masters of Science in Computer Science from Stanford University in 2017,
+      where I focused on decision making under uncertainty and reinforcement learning as
+      part of the [Stanford Intelligent Systems Laboratory](https://sisl.stanford.edu/)
+      advised by [Mykel Kochenderfer](https://mykel.kochenderfer.com/).
+    # imageUrl: "images/profile.jpg"  # Optional: path to profile image in static/ folder
+  
+  # Social links
+  socialIcons:
+    - name: googlescholar
+      url: "https://scholar.google.com/citations?user=8erqrHcAAAAJ&hl=en"
+    - name: github
+      url: "https://github.com/wulfebw"
+    - name: linkedin
+      url: "https://www.linkedin.com/in/blake-wulfe-78b266179/"
+
+
+  
+  # Show social icons
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  comments: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: false
+
+menu:
+  main:
+    - identifier: about
+      name: About
+      url: /
+      weight: 10
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 20
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 30
+    - identifier: resume
+      name: Resume
+      url: /resume.pdf
+      weight: 40
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
