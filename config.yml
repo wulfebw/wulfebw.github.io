@@ -1,6 +1,6 @@
 baseURL: "https://wulfebw.github.io/"
 languageCode: "en-us"
-title: "Your Name's Blog"
+title: "Blake Wulfe's Website"
 theme: "PaperMod"
 
 enableRobotsTXT: true
@@ -14,20 +14,18 @@ minify:
 
 params:
   env: production
-  title: "Your Name's Blog"
-  description: "Personal blog and portfolio"
-  author: "Your Name"
+  title: "Blake Wulfe's Website"
+  description: "Blake Wulfe's website"
+  author: "Blake Wulfe"
   keywords: [Blog, Portfolio]
   # Social links
   socialIcons:
     - name: linkedin
-      url: "https://linkedin.com/in/yourprofile"
+      url: "https://www.linkedin.com/in/blake-wulfe-78b266179/"
     - name: github
       url: "https://github.com/wulfebw"
-    - name: twitter
-      url: "https://twitter.com/yourhandle"
     - name: google-scholar
-      url: "https://scholar.google.com/citations?user=yourid"
+      url: "https://scholar.google.com/citations?user=8erqrHcAAAAJ&hl=en"
   
   # Homepage layout
   homeInfoParams:
