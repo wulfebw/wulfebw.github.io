@@ -1,0 +1,74 @@
+baseURL: "https://wulfebw.github.io/"
+languageCode: "en-us"
+title: "Your Name's Blog"
+theme: "PaperMod"
+
+enableRobotsTXT: true
+buildDrafts: false
+buildFuture: false
+buildExpired: false
+
+minify:
+  disableXML: true
+  minifyOutput: true
+
+params:
+  env: production
+  title: "Your Name's Blog"
+  description: "Personal blog and portfolio"
+  author: "Your Name"
+  keywords: [Blog, Portfolio]
+  # Social links
+  socialIcons:
+    - name: linkedin
+      url: "https://linkedin.com/in/yourprofile"
+    - name: github
+      url: "https://github.com/wulfebw"
+    - name: twitter
+      url: "https://twitter.com/yourhandle"
+    - name: google-scholar
+      url: "https://scholar.google.com/citations?user=yourid"
+  
+  # Homepage layout
+  homeInfoParams:
+    Title: "About"
+    Content: "Your bio paragraph goes here. This is where you can introduce yourself, your interests, and what you do."
+  
+  # Show social icons
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  comments: false
+  hidemeta: false
+  hideSummary: false
+  showtoc: false
+  tocopen: false
+
+menu:
+  main:
+    - identifier: about
+      name: About
+      url: /
+      weight: 10
+    - identifier: posts
+      name: Posts
+      url: /posts/
+      weight: 20
+    - identifier: tags
+      name: Tags
+      url: /tags/
+      weight: 30
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
