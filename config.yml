@@ -12,6 +12,11 @@ minify:
   disableXML: true
   minifyOutput: true
 
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+
 params:
   env: production
   title: "Blake Wulfe"
@@ -24,7 +29,18 @@ params:
   profileMode:
     enabled: true
     title: "Blake Wulfe"
-    subtitle: "Your bio paragraph goes here. This is where you can introduce yourself, your interests, your background, and what you're currently working on."
+    subtitle: |
+      I am a researcher and engineer building intelligent robots.
+      I previously worked at [Toyota Research Institute](https://www.tri.global/)
+      leading a team training vision language action policies for robotic manipulation. 
+      Before that I worked on prediction for autonomous driving at TRI.
+      
+      <br/>
+      
+      I graduated with a Masters of Science in Computer Science from Stanford University in 2017,
+      where I focused on decision making under uncertainty and reinforcement learning as
+      part of the [Stanford Intelligent Systems Laboratory](https://sisl.stanford.edu/)
+      advised by [Mykel Kochenderfer](https://mykel.kochenderfer.com/).
     # imageUrl: "images/profile.jpg"  # Optional: path to profile image in static/ folder
   
   # Social links
